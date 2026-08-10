@@ -3,422 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Profesional - Social & Ads</title>
-    
-    <!-- Font & Ikon Eksternal -->
+    <title>Laporan Agensi Profesional - AI Powered</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <!-- ==========================================
-         BAGIAN CSS (DESAIN VISUAL iOS 26)
-         ========================================== -->
     <style>
         :root {
-            --bg-color: #F5F5F7; 
-            --text-main: #1D1D1F; 
-            --text-muted: #86868B; 
-            --card-bg: rgba(255, 255, 255, 0.75);
-            --card-border: 1px solid rgba(255, 255, 255, 0.5);
+            --bg-color: #F5F5F7; --text-main: #1D1D1F; --text-muted: #86868B;
+            --card-bg: rgba(255, 255, 255, 0.9); --card-border: 1px solid rgba(255, 255, 255, 0.5);
             --milky-blue: linear-gradient(135deg, #A1C4FD 0%, #C2E9FB 100%);
-            --milky-blue-shadow: 0 10px 20px rgba(161, 196, 253, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.6);
-            --soft-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+            --soft-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
         
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Sidebar Kaca */
-        .sidebar {
-            width: 260px;
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border-right: var(--card-border);
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 10;
-        }
-
-        .brand { font-size: 20px; font-weight: 700; margin-bottom: 30px; padding-left: 15px; display: flex; align-items: center; gap: 10px; }
-        .nav-item { padding: 12px 15px; border-radius: 16px; color: var(--text-muted); text-decoration: none; display: flex; align-items: center; gap: 12px; font-weight: 500; transition: 0.3s; }
-        .nav-item.active { background: var(--milky-blue); color: var(--text-main); box-shadow: 0 4px 12px rgba(161, 196, 253, 0.3); font-weight: 600; }
-
+        /* Sidebar Laci */
+        .sidebar { width: 220px; background: var(--card-bg); border-right: var(--card-border); padding: 20px; z-index: 10; }
+        .brand { font-size: 18px; font-weight: 700; margin-bottom: 30px; display: flex; align-items: center; gap: 8px; color: #007AFF;}
+        .nav-item { padding: 10px; border-radius: 12px; color: var(--text-muted); text-decoration: none; display: block; font-weight: 500; margin-bottom: 8px; transition: 0.2s;}
+        .nav-item.active { background: var(--milky-blue); color: var(--text-main); font-weight: 600; }
+        
         /* Konten Utama */
-        .main-content { flex: 1; padding: 30px 40px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; }
-        .header { display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
-        .subtitle { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; }
+        .header-controls { display: flex; justify-content: space-between; margin-bottom: 20px; }
         
-        .controls { display: flex; align-items: center; gap: 16px; }
-        .time-filter { display: flex; background: rgba(227, 227, 232, 0.5); padding: 4px; border-radius: 20px; }
-        .time-btn { padding: 8px 16px; border: none; background: transparent; border-radius: 16px; font-family: inherit; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: 0.3s; }
-        .time-btn.active { background: #FFFFFF; color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        /* Form Kop Surat Laporan */
+        .report-header { background: #FFF; padding: 20px; border-radius: 16px; box-shadow: var(--soft-shadow); margin-bottom: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;}
+        .header-group { display: flex; flex-direction: column; gap: 4px; }
+        .header-group label { font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        .header-group input { border: none; font-size: 16px; font-weight: 500; color: var(--text-main); outline: none; border-bottom: 1px dashed #CCC; padding-bottom: 4px; background: transparent; width: 100%;}
+        .header-group input:focus { border-bottom: 1px solid #007AFF; }
 
-        /* Tombol iOS */
-        .btn-ios-blue, .btn-ios-white { font-family: inherit; font-size: 14px; font-weight: 600; padding: 10px 20px; border-radius: 30px; border: none; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
-        .btn-ios-blue { background: var(--milky-blue); color: var(--text-main); box-shadow: var(--milky-blue-shadow); }
-        .btn-ios-blue:hover { transform: translateY(-2px); box-shadow: 0 14px 24px rgba(161, 196, 253, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.8); }
-        .btn-ios-white { background: #FFFFFF; color: var(--text-main); box-shadow: var(--soft-shadow); }
-        .btn-ios-white:hover { transform: translateY(-2px); box-shadow: 0 12px 20px rgba(0,0,0,0.08); }
-
-        /* Tab Menu */
-        .tab-menu { display: flex; gap: 12px; margin-bottom: 10px; }
-        .tab-btn { padding: 10px 20px; border-radius: 20px; border: none; background: #E5E5EA; color: var(--text-muted); font-weight: 600; cursor: pointer; transition: 0.3s; font-family: inherit;}
-        .tab-btn.active { background: var(--text-main); color: #FFFFFF; box-shadow: var(--soft-shadow); }
-        .tab-content { display: none; flex-direction: column; gap: 24px; animation: fadeIn 0.3s ease; }
-        .tab-content.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Kartu Metrik */
-        .cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-        .card { background: var(--card-bg); backdrop-filter: blur(20px); border: var(--card-border); padding: 24px; border-radius: 24px; box-shadow: var(--soft-shadow); display: flex; flex-direction: column; gap: 8px; transition: 0.3s; }
-        .card:hover { transform: translateY(-4px); }
-        .card-title { font-size: 14px; color: var(--text-muted); font-weight: 500; }
-        .card-value { font-size: 28px; font-weight: 700; }
-
-        /* Tabel Data */
-        .table-container { background: #FFFFFF; border-radius: 24px; padding: 24px; box-shadow: var(--soft-shadow); }
-        .table-container h2 { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { color: var(--text-muted); font-weight: 500; font-size: 13px; padding: 12px 16px; border-bottom: 1px solid #E5E5EA; }
-        td { padding: 16px; font-size: 14px; border-bottom: 1px solid #F5F5F7; vertical-align: middle; }
-        tr:last-child td { border-bottom: none; }
-        .konten-judul { font-weight: 600; color: var(--text-main); }
+        /* Tabel Serbaguna */
+        .section-title { font-size: 18px; font-weight: 700; margin: 30px 0 15px 0; display: flex; justify-content: space-between; align-items: center;}
+        .table-container { background: #FFF; border-radius: 16px; box-shadow: var(--soft-shadow); overflow-x: auto; margin-bottom: 20px;}
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;}
+        th { background: #F9F9FB; color: var(--text-muted); font-weight: 600; padding: 12px; border-bottom: 1px solid #E5E5EA; white-space: nowrap;}
+        td { padding: 12px; border-bottom: 1px solid #F5F5F7; vertical-align: middle; }
+        td[contenteditable="true"] { cursor: text; transition: 0.2s; }
+        td[contenteditable="true"]:hover { background: #F0F8FF; outline: 1px dashed #A1C4FD; }
+        td[contenteditable="true"]:focus { background: #FFF; outline: 2px solid #007AFF; }
         
-        .action-btns { display: flex; gap: 8px; }
-        .btn-icon { width: 32px; height: 32px; border-radius: 10px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 16px; }
-        .btn-edit { background: #F0F4FF; color: #007AFF; } .btn-edit:hover { background: #E0EBFF; }
-        .btn-delete { background: #FFF0F0; color: #FF3B30; } .btn-delete:hover { background: #FFE0E0; }
-        .insights-box { background: #F0F4FF; border-left: 4px solid #007AFF; padding: 16px; border-radius: 12px; margin-top: 16px; font-size: 14px; line-height: 1.5; }
-
-        /* Pop-up Form Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 100; }
-        .modal-content { background: #FFFFFF; width: 450px; border-radius: 24px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto;}
-        .modal-content h3 { margin-bottom: 20px; font-weight: 600; font-size: 20px; }
-        .form-group { margin-bottom: 16px; }
-        .form-row { display: flex; gap: 12px; }
-        .form-row .form-group { flex: 1; }
-        .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500;}
-        .form-group input { width: 100%; padding: 12px 16px; border: 1px solid #E5E5EA; border-radius: 12px; font-family: inherit; font-size: 14px; background: #F9F9FB; outline: none; transition: 0.2s; }
-        .form-group input:focus { border-color: #A1C4FD; background: #FFFFFF; box-shadow: 0 0 0 3px rgba(161, 196, 253, 0.2); }
-        .form-section { display: none; }
-        .form-section.active { display: block; }
-        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
-        .btn-cancel { background: #F5F5F7; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 600; cursor: pointer; font-family: inherit; }
+        /* Tombol & AI Box */
+        .btn { padding: 8px 16px; border-radius: 20px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .btn-blue { background: var(--milky-blue); color: var(--text-main); }
+        .btn-outline { background: #FFF; border: 1px solid #E5E5EA; color: var(--text-main); }
+        .btn-delete { background: #FFF0F0; color: #FF3B30; padding: 6px; border-radius: 8px;}
+        
+        .ai-box { background: linear-gradient(135deg, #F0F4FF 0%, #E6E6FA 100%); border-left: 4px solid #8A2BE2; padding: 20px; border-radius: 16px; margin-top: 20px; display: none;}
+        .ai-box h3 { display: flex; align-items: center; gap: 8px; color: #4B0082; margin-bottom: 10px; font-size: 16px;}
+        .ai-content { font-size: 14px; line-height: 1.6; color: #333; white-space: pre-line;}
     </style>
 </head>
 <body>
 
-    <!-- ==========================================
-         BAGIAN HTML (STRUKTUR KONTEN)
-         ========================================== -->
     <aside class="sidebar" data-html2canvas-ignore="true">
-        <div class="brand">
-            <i class="ph ph-chart-line-up" style="font-size: 28px; color: #007AFF;"></i> ReportSync
-        </div>
-        <a href="#" class="nav-item active"><i class="ph ph-squares-four" style="font-size: 20px;"></i> Dashboard Utama</a>
+        <div class="brand"><i class="ph ph-chart-polar"></i> ReportSync</div>
+        <a href="#" class="nav-item active">Dashboard Laporan</a>
     </aside>
 
     <main class="main-content" id="print-area">
-        <header class="header">
+        
+        <div class="header-controls" data-html2canvas-ignore="true">
+            <h2>Work & Performance Report</h2>
             <div>
-                <h1>Laporan Kinerja Digital</h1>
-                <p class="subtitle" id="report-date">Periode Aktif: Mingguan</p>
-            </div>
-            
-            <div class="controls" data-html2canvas-ignore="true">
-                <div class="time-filter">
-                    <button class="time-btn" onclick="setActiveTime(this, 'Harian')">Harian</button>
-                    <button class="time-btn active" onclick="setActiveTime(this, 'Mingguan')">Mingguan</button>
-                    <button class="time-btn" onclick="setActiveTime(this, 'Bulanan')">Bulanan</button>
-                </div>
-                <button class="btn-ios-blue" onclick="exportPDF()"><i class="ph ph-download-simple"></i> Download PDF</button>
-                <button class="btn-ios-white" onclick="openModalBaru()"><i class="ph ph-plus"></i> Tambah Manual</button>
-            </div>
-        </header>
-
-        <div class="tab-menu" data-html2canvas-ignore="true">
-            <button class="tab-btn active" onclick="switchTab('reels')">🎬 Kinerja Reels</button>
-            <button class="tab-btn" onclick="switchTab('story')">📸 Kinerja Story</button>
-            <button class="tab-btn" onclick="switchTab('ads')">📢 Kinerja Iklan</button>
-        </div>
-
-        <!-- KONTEN TAB: REELS -->
-        <div id="tab-reels" class="tab-content active">
-            <div class="cards-grid">
-                <div class="card"><span class="card-title">Total Plays</span><span class="card-value">1,250,000</span></div>
-                <div class="card"><span class="card-title">Non-Followers Reached</span><span class="card-value">78%</span></div>
-                <div class="card"><span class="card-title">Avg. Watch Time</span><span class="card-value">12s</span></div>
-                <div class="card"><span class="card-title">Shares & Saves</span><span class="card-value">14,200</span></div>
-            </div>
-            <div class="table-container">
-                <h2>Rincian Performa Reels (Viralitas & Retensi)</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Konten Reels</th><th>Total Plays</th><th>Acc. Reached</th><th>Watch Time</th><th>Shares</th><th data-html2canvas-ignore="true">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-reels">
-                        <tr>
-                            <td class="konten-judul">Tutorial Pemakaian</td><td>450,000</td><td>320,000</td><td>14s</td><td>5,400</td>
-                            <td data-html2canvas-ignore="true">
-                                <div class="action-btns">
-                                    <button class="btn-icon btn-edit" onclick="editData(this, 'reels')"><i class="ph ph-pencil-simple"></i></button>
-                                    <button class="btn-icon btn-delete" onclick="hapusData(this)"><i class="ph ph-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <button class="btn btn-outline" onclick="analisaAI()"><i class="ph ph-sparkle"></i> Analisa AI</button>
+                <button class="btn btn-blue" onclick="exportPDF()"><i class="ph ph-download-simple"></i> Unduh PDF</button>
             </div>
         </div>
 
-        <!-- KONTEN TAB: STORY -->
-        <div id="tab-story" class="tab-content">
-            <div class="cards-grid">
-                <div class="card"><span class="card-title">Avg. Reach</span><span class="card-value">25,400</span></div>
-                <div class="card"><span class="card-title">Completion Rate</span><span class="card-value">82%</span></div>
-                <div class="card"><span class="card-title">Taps Back (High Interest)</span><span class="card-value">4,100</span></div>
-                <div class="card"><span class="card-title">Link Clicks</span><span class="card-value">1,250</span></div>
-            </div>
-            <div class="table-container">
-                <h2>Rincian Performa Story (Komunitas)</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Konten Story</th><th>Reach</th><th>Taps Fwd/Back</th><th>Exits</th><th>Completion</th><th data-html2canvas-ignore="true">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-story">
-                        <tr>
-                            <td class="konten-judul">Q&A Spesial</td><td>30,000</td><td>1200 / 800</td><td>150</td><td>85%</td>
-                            <td data-html2canvas-ignore="true">
-                                <div class="action-btns">
-                                    <button class="btn-icon btn-edit" onclick="editData(this, 'story')"><i class="ph ph-pencil-simple"></i></button>
-                                    <button class="btn-icon btn-delete" onclick="hapusData(this)"><i class="ph ph-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <!-- 1. IDENTITAS PELAPOR -->
+        <div class="report-header">
+            <div class="header-group"><label>Nama PIC</label><input type="text" value="Ketik Nama Anda..."></div>
+            <div class="header-group"><label>Jabatan</label><input type="text" value="Social Media Specialist"></div>
+            <div class="header-group"><label>Periode Laporan</label><input type="text" value="1 - 31 Agustus 2026"></div>
+            <div class="header-group"><label>Tanggal Dibuat</label><input type="text" value="1 September 2026"></div>
         </div>
 
-        <!-- KONTEN TAB: ADS -->
-        <div id="tab-ads" class="tab-content">
-            <div class="cards-grid">
-                <div class="card"><span class="card-title">Total Ad Spend</span><span class="card-value">Rp 5.000.000</span></div>
-                <div class="card"><span class="card-title">Avg. CPC</span><span class="card-value">Rp 850</span></div>
-                <div class="card"><span class="card-title">Avg. CTR</span><span class="card-value">2.4%</span></div>
-                <div class="card"><span class="card-title">ROAS (Return)</span><span class="card-value">4.5x</span></div>
-            </div>
-            <div class="table-container">
-                <h2>Rincian Kampanye Ads (Keuangan)</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nama Kampanye</th><th>Ad Spend</th><th>CPC (Rp)</th><th>CTR (%)</th><th>ROAS</th><th data-html2canvas-ignore="true">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-ads">
-                        <tr>
-                            <td class="konten-judul">Promo Agustus - Video</td><td>2,500,000</td><td>750</td><td>3.1%</td><td>5.2x</td>
-                            <td data-html2canvas-ignore="true">
-                                <div class="action-btns">
-                                    <button class="btn-icon btn-edit" onclick="editData(this, 'ads')"><i class="ph ph-pencil-simple"></i></button>
-                                    <button class="btn-icon btn-delete" onclick="hapusData(this)"><i class="ph ph-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="insights-box">
-                    <strong>💡 A/B Testing Insights:</strong> Berdasarkan data, Iklan dengan format Video (Reels) menghasilkan Cost Per Click (CPC) 30% lebih murah dibandingkan Iklan dengan format Gambar statis. Rekomendasi bulan depan adalah mengalokasikan budget lebih besar ke format Video.
-                </div>
-            </div>
+        <!-- 2. RINGKASAN PEKERJAAN -->
+        <div class="section-title">A. Ringkasan Pekerjaan & Kendala <button class="btn btn-outline" onclick="tambahBaris('tabel-pekerjaan')" data-html2canvas-ignore="true">+ Baris</button></div>
+        <div class="table-container">
+            <table id="tabel-pekerjaan">
+                <thead><tr><th>No</th><th>Aktivitas Pekerjaan</th><th>Status</th><th>Kendala / Keterangan</th><th>Dampak</th><th>Solusi (Action Plan)</th><th data-html2canvas-ignore="true">Aksi</th></tr></thead>
+                <tbody>
+                    <tr><td contenteditable="true">1</td><td contenteditable="true">Riset & Ideasi Konten September</td><td contenteditable="true">Selesai</td><td contenteditable="true">Kekurangan referensi B2B</td><td contenteditable="true">Jadwal telat 1 hari</td><td contenteditable="true">Mencari referensi dari akun luar negeri</td><td data-html2canvas-ignore="true"><button class="btn btn-delete" onclick="hapusBaris(this)"><i class="ph ph-trash"></i></button></td></tr>
+                </tbody>
+            </table>
         </div>
+
+        <!-- 3. PERFORMA MEDIA SOSIAL (OVERALL) -->
+        <div class="section-title">B. Performa Akun Media Sosial <button class="btn btn-outline" onclick="tambahBaris('tabel-performa')" data-html2canvas-ignore="true">+ Baris</button></div>
+        <div class="table-container">
+            <table id="tabel-performa">
+                <thead><tr><th>Platform</th><th>Foll. Awal</th><th>Foll. Akhir</th><th>Reach</th><th>Impressions</th><th>Avg. Engagement</th><th>Demografi Viewer (Top Kota)</th><th>Rasio Viewer</th><th data-html2canvas-ignore="true">Aksi</th></tr></thead>
+                <tbody>
+                    <tr><td contenteditable="true">Instagram</td><td contenteditable="true">12,000</td><td contenteditable="true">12,450</td><td contenteditable="true">45,000</td><td contenteditable="true">60,000</td><td contenteditable="true">4.5%</td><td contenteditable="true">Jakarta (45%), Surabaya (12%)</td><td contenteditable="true">60% Non-Foll, 40% Foll</td><td data-html2canvas-ignore="true"><button class="btn btn-delete" onclick="hapusBaris(this)"><i class="ph ph-trash"></i></button></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 4. AKTIVITAS ENGAGEMENT (CS/REPLY) -->
+        <div class="section-title">C. Aktivitas Interaksi Audiens</div>
+        <div class="table-container">
+            <table>
+                <thead><tr><th>Komentar Dibalas</th><th>DM Dibalas</th><th>Pertanyaan Produk</th><th>Keluhan (Complain)</th><th>Testimoni Masuk</th></tr></thead>
+                <tbody>
+                    <tr><td contenteditable="true">145</td><td contenteditable="true">89</td><td contenteditable="true">42</td><td contenteditable="true">3</td><td contenteditable="true">12</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 5. KONTEN TERBAIK -->
+        <div class="section-title">D. Analisis Konten Terbaik <button class="btn btn-outline" onclick="tambahBaris('tabel-konten')" data-html2canvas-ignore="true">+ Baris</button></div>
+        <div class="table-container">
+            <table id="tabel-konten">
+                <thead><tr><th>Nama Konten</th><th>Platform</th><th>Tujuan/Objektif</th><th>Reach</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Saves</th><th data-html2canvas-ignore="true">Aksi</th></tr></thead>
+                <tbody>
+                    <tr><td contenteditable="true">Video Behind The Scene</td><td contenteditable="true">TikTok</td><td contenteditable="true">Viralitas (Awareness)</td><td contenteditable="true">120,000</td><td contenteditable="true">15,000</td><td contenteditable="true">340</td><td contenteditable="true">1,200</td><td contenteditable="true">500</td><td data-html2canvas-ignore="true"><button class="btn btn-delete" onclick="hapusBaris(this)"><i class="ph ph-trash"></i></button></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 6. PERFORMA IKLAN (AUTO CALCULATION) -->
+        <div class="section-title">E. Laporan Kinerja Iklan (Ads) <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">*Ketik di kolom putih, angka biru terhitung otomatis</span></div>
+        <div class="table-container">
+            <table id="tabel-ads">
+                <thead><tr><th>Campaign Name</th><th>Platform</th><th>Target (Lokasi/Umur)</th><th>Budget (Rp)</th><th>Spend (Rp)</th><th>Impression</th><th>Clicks</th><th>Leads</th><th style="color:#007AFF;">CTR (%)</th><th style="color:#007AFF;">CPC (Rp)</th><th style="color:#007AFF;">CPM (Rp)</th><th style="color:#007AFF;">Cost/Lead</th><th>ROAS</th></tr></thead>
+                <tbody oninput="hitungAdsOtomatis()">
+                    <tr>
+                        <td contenteditable="true">Promo Agustus</td><td contenteditable="true">Meta Ads</td><td contenteditable="true">ID, 18-35th</td>
+                        <td contenteditable="true" class="ads-budget">5000000</td>
+                        <td contenteditable="true" class="ads-spend">4500000</td>
+                        <td contenteditable="true" class="ads-imp">150000</td>
+                        <td contenteditable="true" class="ads-clicks">3500</td>
+                        <td contenteditable="true" class="ads-leads">120</td>
+                        <td class="ads-ctr" style="font-weight:600; color:#007AFF; background:#F0F8FF;">0</td>
+                        <td class="ads-cpc" style="font-weight:600; color:#007AFF; background:#F0F8FF;">0</td>
+                        <td class="ads-cpm" style="font-weight:600; color:#007AFF; background:#F0F8FF;">0</td>
+                        <td class="ads-cpl" style="font-weight:600; color:#007AFF; background:#F0F8FF;">0</td>
+                        <td contenteditable="true">4.5x</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- BOX ANALISA AI -->
+        <div class="ai-box" id="ai-result">
+            <h3><i class="ph ph-robot"></i> AI Performance Insights & Recommendations</h3>
+            <div class="ai-content" id="ai-text">Menganalisa data...</div>
+        </div>
+
     </main>
 
-    <!-- FORM MODAL (Tersembunyi) -->
-    <div class="modal-overlay" id="formModal" data-html2canvas-ignore="true">
-        <div class="modal-content">
-            <h3 id="modal-title">Kelola Data Manual</h3>
-            <div class="form-group">
-                <label>Nama Konten / Kampanye</label>
-                <input type="text" id="input-nama" placeholder="Ketik nama di sini...">
-            </div>
-
-            <div id="form-reels" class="form-section active">
-                <div class="form-row">
-                    <div class="form-group"><label>Total Plays</label><input type="number" id="r-plays"></div>
-                    <div class="form-group"><label>Acc. Reached</label><input type="number" id="r-reach"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Watch Time (detik)</label><input type="text" id="r-time" placeholder="Contoh: 15s"></div>
-                    <div class="form-group"><label>Shares</label><input type="number" id="r-shares"></div>
-                </div>
-            </div>
-
-            <div id="form-story" class="form-section">
-                <div class="form-row">
-                    <div class="form-group"><label>Reach</label><input type="number" id="s-reach"></div>
-                    <div class="form-group"><label>Taps (Fwd/Back)</label><input type="text" id="s-taps" placeholder="Contoh: 1200 / 800"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Exits</label><input type="number" id="s-exits"></div>
-                    <div class="form-group"><label>Completion (%)</label><input type="text" id="s-comp" placeholder="Contoh: 85%"></div>
-                </div>
-            </div>
-
-            <div id="form-ads" class="form-section">
-                <div class="form-row">
-                    <div class="form-group"><label>Ad Spend (Rp)</label><input type="number" id="a-spend"></div>
-                    <div class="form-group"><label>CPC (Rp)</label><input type="number" id="a-cpc"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>CTR (%)</label><input type="text" id="a-ctr" placeholder="Contoh: 2.5%"></div>
-                    <div class="form-group"><label>ROAS (x)</label><input type="text" id="a-roas" placeholder="Contoh: 4.5x"></div>
-                </div>
-            </div>
-
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeModal()">Batal</button>
-                <button class="btn-ios-blue" onclick="simpanData()">Simpan Data</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==========================================
-         BAGIAN JAVASCRIPT (LOGIKA)
-         ========================================== -->
     <script>
-        let barisYangDiedit = null; 
-        let tabAktifSekarang = 'reels'; 
+        // FUNGSI 1: Hapus Baris
+        function hapusBaris(btn) { if(confirm("Hapus baris ini?")) btn.closest('tr').remove(); hitungAdsOtomatis(); }
 
-        function setActiveTime(btn, periode) {
-            document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('report-date').innerText = "Periode Aktif: " + periode;
+        // FUNGSI 2: Tambah Baris Dinamis
+        function tambahBaris(tabelId) {
+            const tbody = document.querySelector(`#${tabelId} tbody`);
+            const row = tbody.rows[0].cloneNode(true); // Duplikat baris pertama
+            // Kosongkan isi sel yang bisa diedit
+            Array.from(row.cells).forEach(cell => { if(cell.hasAttribute('contenteditable')) cell.innerText = ''; });
+            tbody.appendChild(row);
         }
 
-        function switchTab(tabId) {
-            tabAktifSekarang = tabId;
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
+        // FUNGSI 3: Kalkulator Ads Cerdas
+        function hitungAdsOtomatis() {
+            const rows = document.querySelectorAll('#tabel-ads tbody tr');
+            rows.forEach(row => {
+                // Ambil nilai dan pastikan itu angka (hapus koma/titik jika ada)
+                const getVal = (className) => parseFloat(row.querySelector(`.${className}`).innerText.replace(/,/g, '')) || 0;
+                
+                let spend = getVal('ads-spend');
+                let imp = getVal('ads-imp');
+                let clicks = getVal('ads-clicks');
+                let leads = getVal('ads-leads');
+
+                // Rumus Digital Marketing
+                let ctr = imp > 0 ? ((clicks / imp) * 100).toFixed(2) : 0;
+                let cpc = clicks > 0 ? Math.round(spend / clicks) : 0;
+                let cpm = imp > 0 ? Math.round((spend / imp) * 1000) : 0;
+                let cpl = leads > 0 ? Math.round(spend / leads) : 0;
+
+                // Tampilkan hasil
+                row.querySelector('.ads-ctr').innerText = ctr + '%';
+                row.querySelector('.ads-cpc').innerText = 'Rp ' + cpc.toLocaleString('id-ID');
+                row.querySelector('.ads-cpm').innerText = 'Rp ' + cpm.toLocaleString('id-ID');
+                row.querySelector('.ads-cpl').innerText = 'Rp ' + cpl.toLocaleString('id-ID');
+            });
         }
 
-        function closeModal() {
-            document.getElementById('formModal').style.display = 'none';
-            barisYangDiedit = null;
+        // Jalankan kalkulasi saat web pertama dibuka
+        window.onload = hitungAdsOtomatis;
+
+        // FUNGSI 4: Simulasi AI Analytics
+        function analisaAI() {
+            const aiBox = document.getElementById('ai-result');
+            const aiText = document.getElementById('ai-text');
+            aiBox.style.display = 'block';
+            aiText.innerText = "Sistem AI sedang memproses metrik Anda...";
+
+            setTimeout(() => {
+                // Mengambil nilai CTR dari baris pertama iklan untuk simulasi
+                let firstCtrText = document.querySelector('.ads-ctr').innerText.replace('%','');
+                let ctrValue = parseFloat(firstCtrText) || 0;
+                
+                let insight = "";
+                insight += "📊 **Analisis Konten Organik:**\nBerdasarkan data tabel, konten dengan tingkat 'Shares' dan 'Saves' tertinggi berfungsi sangat baik untuk menjangkau Non-Followers. Rekomendasi: Perbanyak rasio pembuatan video edukasi/BTS sebesar 30% dari total pilar konten bulan depan.\n\n";
+                
+                insight += "🎯 **Analisis Performa Iklan (Ads):**\n";
+                if(ctrValue > 2) {
+                    insight += `Click-Through Rate (CTR) Anda sangat baik (${ctrValue}%). Visual dan Copywriting sudah resonan dengan audiens umur 18-35th. Rekomendasi: Pertahankan winning campaign ini dan coba naikkan Spend Budget harian sebesar 15% untuk memaksimalkan ROAS.`;
+                } else {
+                    insight += `Click-Through Rate (CTR) Anda berada di angka ${ctrValue}%. Ini menandakan audiens melihat iklan, namun enggan mengklik. Rekomendasi: Lakukan A/B Testing dengan mengganti 'Hook' pada 3 detik pertama video atau buat penawaran (Call to Action) yang lebih kuat.`;
+                }
+                
+                insight += "\n\n⚠️ **Catatan Mitigasi:**\nUntuk kendala keterlambatan ideasi, pastikan framework riset B2B dikunci pada minggu ke-3 setiap bulannya.";
+                
+                aiText.innerText = insight;
+            }, 1200); // Simulasi waktu loading 1.2 detik
         }
 
-        function aturFormBerdasarkanTab() {
-            document.querySelectorAll('.form-section').forEach(sec => sec.classList.remove('active'));
-            document.getElementById('form-' + tabAktifSekarang).classList.add('active');
-        }
-
-        function openModalBaru() {
-            document.getElementById('modal-title').innerText = "Tambah Data " + tabAktifSekarang.toUpperCase();
-            document.getElementById('input-nama').value = ""; 
-            
-            // Kosongkan semua input field
-            const inputs = document.querySelectorAll('.form-section input');
-            inputs.forEach(input => input.value = '');
-
-            aturFormBerdasarkanTab();
-            document.getElementById('formModal').style.display = 'flex';
-        }
-
-        function editData(button, tipeTab) {
-            barisYangDiedit = button.closest('tr');
-            document.getElementById('modal-title').innerText = "Edit Data " + tipeTab.toUpperCase();
-            document.getElementById('input-nama').value = barisYangDiedit.querySelector('.konten-judul').innerText;
-
-            const cleanNum = (str) => str.replace(/,/g, '');
-
-            if (tipeTab === 'reels') {
-                document.getElementById('r-plays').value = cleanNum(barisYangDiedit.cells[1].innerText);
-                document.getElementById('r-reach').value = cleanNum(barisYangDiedit.cells[2].innerText);
-                document.getElementById('r-time').value = barisYangDiedit.cells[3].innerText;
-                document.getElementById('r-shares').value = cleanNum(barisYangDiedit.cells[4].innerText);
-            } else if (tipeTab === 'story') {
-                document.getElementById('s-reach').value = cleanNum(barisYangDiedit.cells[1].innerText);
-                document.getElementById('s-taps').value = barisYangDiedit.cells[2].innerText;
-                document.getElementById('s-exits').value = cleanNum(barisYangDiedit.cells[3].innerText);
-                document.getElementById('s-comp').value = barisYangDiedit.cells[4].innerText;
-            } else if (tipeTab === 'ads') {
-                document.getElementById('a-spend').value = cleanNum(barisYangDiedit.cells[1].innerText);
-                document.getElementById('a-cpc').value = cleanNum(barisYangDiedit.cells[2].innerText);
-                document.getElementById('a-ctr').value = barisYangDiedit.cells[3].innerText;
-                document.getElementById('a-roas').value = barisYangDiedit.cells[4].innerText;
-            }
-
-            aturFormBerdasarkanTab();
-            document.getElementById('formModal').style.display = 'flex';
-        }
-
-        function simpanData() {
-            const nama = document.getElementById('input-nama').value;
-            if(!nama) return alert("Nama konten wajib diisi!");
-
-            const formatAngka = (num) => (isNaN(num) || num === "") ? num : Number(num).toLocaleString('en-US');
-            let sel1, sel2, sel3, sel4;
-
-            if (tabAktifSekarang === 'reels') {
-                sel1 = formatAngka(document.getElementById('r-plays').value);
-                sel2 = formatAngka(document.getElementById('r-reach').value);
-                sel3 = document.getElementById('r-time').value;
-                sel4 = formatAngka(document.getElementById('r-shares').value);
-            } else if (tabAktifSekarang === 'story') {
-                sel1 = formatAngka(document.getElementById('s-reach').value);
-                sel2 = document.getElementById('s-taps').value;
-                sel3 = formatAngka(document.getElementById('s-exits').value);
-                sel4 = document.getElementById('s-comp').value;
-            } else if (tabAktifSekarang === 'ads') {
-                sel1 = formatAngka(document.getElementById('a-spend').value);
-                sel2 = formatAngka(document.getElementById('a-cpc').value);
-                sel3 = document.getElementById('a-ctr').value;
-                sel4 = document.getElementById('a-roas').value;
-            }
-
-            if (barisYangDiedit) {
-                barisYangDiedit.querySelector('.konten-judul').innerText = nama;
-                barisYangDiedit.cells[1].innerText = sel1;
-                barisYangDiedit.cells[2].innerText = sel2;
-                barisYangDiedit.cells[3].innerText = sel3;
-                barisYangDiedit.cells[4].innerText = sel4;
-            } else {
-                const tbody = document.getElementById('table-' + tabAktifSekarang);
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td class="konten-judul">${nama}</td><td>${sel1}</td><td>${sel2}</td><td>${sel3}</td><td>${sel4}</td>
-                                <td data-html2canvas-ignore="true"><div class="action-btns">
-                                <button class="btn-icon btn-edit" onclick="editData(this, '${tabAktifSekarang}')"><i class="ph ph-pencil-simple"></i></button>
-                                <button class="btn-icon btn-delete" onclick="hapusData(this)"><i class="ph ph-trash"></i></button></div></td>`;
-                tbody.prepend(tr);
-            }
-            closeModal();
-        }
-
-        function hapusData(button) {
-            if(confirm("Yakin ingin menghapus data ini?")) button.closest('tr').remove();
-        }
-
+        // FUNGSI 5: Cetak PDF
         function exportPDF() {
-            const opt = { margin: 10, filename: `Laporan_${tabAktifSekarang.toUpperCase()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } };
+            const opt = { 
+                margin: 10, 
+                filename: 'Laporan_Kinerja_Agensi.pdf', 
+                image: { type: 'jpeg', quality: 0.98 }, 
+                html2canvas: { scale: 2, useCORS: true }, 
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
+            };
             html2pdf().set(opt).from(document.getElementById('print-area')).save();
         }
     </script>
