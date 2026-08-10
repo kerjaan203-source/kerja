@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Pelaporan Agensi Komprehensif</title>
+    <title>Dashboard Pelaporan - Sosmed & Ads</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -18,53 +18,54 @@
         body { background-color: var(--bg-color); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
         
         /* SIDEBAR */
-        .sidebar { width: 240px; background: #FFF; border-right: 1px solid #E5E5EA; padding: 20px; z-index: 10; display: flex; flex-direction: column; gap: 10px;}
+        .sidebar { width: 260px; background: #FFF; border-right: 1px solid #E5E5EA; padding: 20px; z-index: 10; display: flex; flex-direction: column; gap: 10px;}
         .brand { font-size: 18px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; color: #007AFF;}
-        .info-text { font-size: 13px; color: var(--text-muted); line-height: 1.5; background: #F9F9FB; padding: 12px; border-radius: 12px;}
+        .tab-btn { padding: 12px 15px; border-radius: 12px; border: none; background: transparent; color: var(--text-muted); font-weight: 600; text-align: left; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; font-size: 14px;}
+        .tab-btn:hover { background: #F5F5F7; }
+        .tab-btn.active { background: var(--milky-blue); color: var(--text-main); box-shadow: var(--soft-shadow); }
 
         /* KONTEN UTAMA */
-        .main-content { flex: 1; padding: 30px 40px; overflow-y: auto; scroll-behavior: smooth;}
-        .action-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #E5E5EA;}
+        .main-content { flex: 1; padding: 30px 40px; overflow-y: auto; scroll-behavior: smooth; background: var(--bg-color);}
+        .view-section { display: none; animation: fadeIn 0.4s ease; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .action-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;}
         .btn-blue { background: #007AFF; color: #FFF; padding: 10px 20px; border-radius: 20px; border: none; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.2s;}
         .btn-blue:hover { background: #0056b3; }
         .btn-outline { background: #F0F4FF; border: 1px solid #A1C4FD; color: #007AFF; padding: 6px 12px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 12px;}
 
-        /* KERTAS LAPORAN (AREA PRINT) */
-        #area-cetak { background: #FFF; padding: 40px; border-radius: 16px; box-shadow: var(--soft-shadow); color: #1D1D1F; max-width: 1200px; margin: 0 auto;}
+        /* AREA CETAK KERTAS LAPORAN */
+        .area-cetak { background: #FFF; padding: 40px; border-radius: 16px; box-shadow: var(--soft-shadow); color: #1D1D1F; max-width: 1200px; margin: 0 auto;}
         
-        /* 1. KOP IDENTITAS */
+        /* KOP IDENTITAS KOSONG */
         .kop-identitas { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; border-bottom: 2px solid #1D1D1F; padding-bottom: 20px;}
-        .kop-title h1 { font-size: 28px; font-weight: 800; letter-spacing: -1px;}
+        .kop-title h1 { font-size: 26px; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px;}
         .kop-details { display: flex; flex-direction: column; gap: 8px;}
         .identitas-row { display: flex; font-size: 14px;}
-        .identitas-label { width: 140px; font-weight: 600; color: var(--text-muted);}
-        .identitas-val { flex: 1; font-weight: 600; border-bottom: 1px dashed #CCC; outline: none; min-width: 200px; min-height: 20px;}
+        .identitas-label { width: 120px; font-weight: 600; color: var(--text-muted);}
+        .identitas-val { flex: 1; font-weight: 600; border-bottom: 1px dashed #CCC; outline: none;}
         .identitas-val:focus { border-bottom: 1px solid #007AFF; background: #F0F8FF;}
 
-        /* PEMISAH BAGIAN (DIVIDER) */
-        .section-divider { background: #1D1D1F; color: #FFF; padding: 12px 20px; font-size: 16px; font-weight: 700; border-radius: 8px; margin: 40px 0 20px 0; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px;}
-
-        /* 2. DASHBOARD RINGKASAN */
+        /* DASHBOARD RINGKASAN */
         .dash-section { border: 1px solid #E5E5EA; border-radius: 16px; padding: 24px; margin-bottom: 20px; background: #FAFAFA;}
-        .dash-section h2 { font-size: 16px; margin-bottom: 20px; color: #1D1D1F; display: flex; align-items: center; gap: 8px;}
         .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
         .dash-card { background: #FFF; padding: 16px; border-radius: 12px; border: 1px solid #E5E5EA; display: flex; flex-direction: column; gap: 4px;}
         .dash-label { font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;}
         .dash-value { font-size: 24px; font-weight: 700; color: #1D1D1F;}
         
         .ai-box { background: linear-gradient(135deg, #F4F0FF 0%, #FDFBFF 100%); border-left: 5px solid #8A2BE2; padding: 20px; border-radius: 12px; margin-bottom: 30px;}
-        .ai-box h2 { color: #4B0082; font-size: 15px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;}
-        .ai-box p { font-size: 13px; line-height: 1.6; color: #333; white-space: pre-line;}
+        .ai-box h2 { color: #4B0082; font-size: 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;}
+        .ai-box p { font-size: 14px; line-height: 1.6; color: #333; white-space: pre-line;}
 
-        /* 3. TABEL RINCIAN (MANUAL) */
+        /* TABEL MANUAL */
         .tabel-section { margin-bottom: 30px; }
         .tabel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 2px solid #F5F5F7; padding-bottom: 8px;}
         .tabel-header h3 { font-size: 15px; font-weight: 700;}
-        
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;}
         th { color: var(--text-muted); font-weight: 600; padding: 10px; border-bottom: 1px solid #E5E5EA; white-space: nowrap; background: #F9F9FB;}
         td { padding: 10px; border-bottom: 1px solid #F5F5F7; vertical-align: middle; }
-        td[contenteditable="true"] { transition: 0.2s; min-width: 60px; outline: none; border-radius: 4px;}
+        td[contenteditable="true"] { transition: 0.2s; min-width: 60px; outline: none;}
         td[contenteditable="true"]:hover { background: #F0F8FF; box-shadow: inset 0 0 0 1px #A1C4FD; }
         td[contenteditable="true"]:focus { background: #FFF; box-shadow: inset 0 0 0 2px #007AFF; }
         .auto-calc { font-weight: 600; color: #007AFF; background: #F0F8FF; text-align: center;}
@@ -77,175 +78,187 @@
 
     <aside class="sidebar" data-html2canvas-ignore="true">
         <div class="brand"><i class="ph ph-chart-polar"></i> ReportSync</div>
-        <div class="info-text">
-            <b>Panduan Pengisian:</b><br><br>
-            1. Form Identitas dibiarkan kosong agar bisa diketik manual.<br>
-            2. Bagian Sosmed & Iklan kini dipisah secara tegas.<br>
-            3. Kotak Dashboard otomatis menghitung.<br>
-            4. Klik "Download PDF" untuk menyimpan hasilnya.
-        </div>
+        
+        <!-- Menu Navigasi Dashboard -->
+        <button class="tab-btn active" onclick="switchTab('view-sosmed', this)">
+            <i class="ph ph-instagram-logo" style="font-size: 18px;"></i> Dashboard Media Sosial
+        </button>
+        <button class="tab-btn" onclick="switchTab('view-ads', this)">
+            <i class="ph ph-megaphone" style="font-size: 18px;"></i> Dashboard Iklan (Ads)
+        </button>
     </aside>
 
     <main class="main-content">
         
-        <div class="action-header" data-html2canvas-ignore="true">
-            <h2>Kertas Kerja Laporan Terpadu</h2>
-            <button class="btn-blue" onclick="unduhPDF()"><i class="ph ph-download-simple"></i> Download PDF Sekarang</button>
+        <!-- =========================================================
+             DASHBOARD 1: MEDIA SOSIAL ORGANIK
+             ========================================================= -->
+        <div id="view-sosmed" class="view-section active">
+            
+            <div class="action-header" data-html2canvas-ignore="true">
+                <h2>Laporan Media Sosial</h2>
+                <button class="btn-blue" onclick="unduhPDF('cetak-sosmed', 'Laporan_Media_Sosial.pdf')">
+                    <i class="ph ph-download-simple"></i> Download Laporan Sosmed
+                </button>
+            </div>
+
+            <!-- KERTAS LAPORAN SOSMED (YANG DI-PRINT) -->
+            <div id="cetak-sosmed" class="area-cetak">
+                
+                <div class="kop-identitas">
+                    <div class="kop-title">
+                        <h1>Kinerja Media Sosial</h1>
+                        <p style="color: var(--text-muted); font-size: 14px;">Laporan Organik & Retensi Komunitas</p>
+                    </div>
+                    <div class="kop-details">
+                        <div class="identitas-row"><span class="identitas-label">Nama PIC</span><span class="identitas-val" contenteditable="true"></span></div>
+                        <div class="identitas-row"><span class="identitas-label">Jabatan</span><span class="identitas-val" contenteditable="true"></span></div>
+                        <div class="identitas-row"><span class="identitas-label">Periode</span><span class="identitas-val" contenteditable="true"></span></div>
+                    </div>
+                </div>
+
+                <div class="dash-section">
+                    <div class="dash-grid">
+                        <div class="dash-card"><span class="dash-label">Total Reach Jaringan</span><span class="dash-value" id="out-reach">0</span></div>
+                        <div class="dash-card"><span class="dash-label">Total Plays Video</span><span class="dash-value" id="out-plays">0</span></div>
+                        <div class="dash-card"><span class="dash-label">Total Interaksi CS</span><span class="dash-value" id="out-cs">0</span></div>
+                        <div class="dash-card"><span class="dash-label">Status Organik</span><span class="dash-value" style="color:#34C759;">Aktif</span></div>
+                    </div>
+                </div>
+
+                <div class="ai-box">
+                    <h2><i class="ph ph-sparkle"></i> AI Insight Media Sosial</h2>
+                    <p id="out-ai-sosmed">Silakan isi data media sosial di tabel bawah agar AI dapat menganalisa...</p>
+                </div>
+
+                <!-- Tabel Sosmed -->
+                <div class="tabel-section">
+                    <div class="tabel-header"><h3>1. Rincian Pekerjaan</h3><button class="btn-outline" onclick="addR('tbl-pekerjaan')" data-html2canvas-ignore="true">+ Tambah</button></div>
+                    <table id="tbl-pekerjaan">
+                        <thead><tr><th>Aktivitas</th><th>Status</th><th>Kendala</th><th>Solusi</th><th data-html2canvas-ignore="true">Aksi</th></tr></thead>
+                        <tbody><tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td data-html2canvas-ignore="true"><button class="btn-delete" onclick="hapusBaris(this)"><i class="ph ph-trash"></i></button></td></tr></tbody>
+                    </table>
+                </div>
+
+                <div class="tabel-section">
+                    <div class="tabel-header"><h3>2. Pertumbuhan Platform</h3><button class="btn-outline" onclick="addR('tbl-growth')" data-html2canvas-ignore="true">+ Tambah</button></div>
+                    <table id="tbl-growth">
+                        <thead><tr><th>Platform</th><th>Foll. Awal</th><th>Foll. Akhir</th><th>Lokasi Audiens</th><th>Rasio Audiens</th><th data-html2canvas-ignore="true">Aksi</th></tr></thead>
+                        <tbody><tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td data-html2canvas-ignore="true"><button class="btn-delete" onclick="hapusBaris(this)"><i class="ph ph-trash"></i></button></td></tr></tbody>
+                    </table>
+                </div>
+
+                <div class="tabel-section">
+                    <div class="tabel-header"><h3>3. Kinerja Konten (Reels/Feed)</h3><button class="btn-outline" onclick="addR('tbl-reels')" data-html2canvas-ignore="true">+ Tambah</button></div>
+                    <table id="tbl-reels">
+                        <thead><tr><th>Nama Konten</th><th>Total Plays</th><th>Non-Foll Reached</th><th>Watch Time</th><th>Shares</th><th>Saves</th><th data-html2canvas-ignore="true">Aksi</th></tr></thead>
+                        <tbody oninput="hitungSosmed()">
+                            <tr><td contenteditable="true"></td><td contenteditable="true" class="val-plays"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td data-html2canvas-ignore="true"><button class="btn-delete" onclick="hapusBaris(this)"><i class="ph ph-trash"></i></button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="tabel-section">
+                    <div class="tabel-header"><h3>4. Kinerja Konten Story</h3><button class="btn-outline" onclick="addR('tbl-story')" data-html2canvas-ignore="true">+ Tambah</button></div>
+                    <table id="tbl-story">
+                        <thead><tr><th>Nama Konten</th><th>Reach</th><th>Completion Rate</th><th>Taps Forward</th><th>Taps Back</th><th>Exits</th><th data-html2canvas-ignore="true">Aksi</th></tr></thead>
+                        <tbody oninput="hitungSosmed()">
+                            <tr><td contenteditable="true"></td><td contenteditable="true" class="val-reach"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td data-html2canvas-ignore="true"><button class="btn-delete" onclick="hapusBaris(this)"><i class="ph ph-trash"></i></button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="tabel-section">
+                    <div class="tabel-header"><h3>5. Interaksi Audiens (CS)</h3><button class="btn-outline" onclick="addR('tbl-interaksi')" data-html2canvas-ignore="true">+ Tambah</button></div>
+                    <table id="tbl-interaksi">
+                        <thead><tr><th>Platform</th><th>Komentar Dibalas</th><th>DM Dibalas</th><th>Pertanyaan</th><th>Keluhan</th><th>Testimoni</th><th data-html2canvas-ignore="true">Aksi</th></tr></thead>
+                        <tbody oninput="hitungSosmed()">
+                            <tr><td contenteditable="true"></td><td contenteditable="true" class="val-cs"></td><td contenteditable="true" class="val-cs"></td><td contenteditable="true" class="val-cs"></td><td contenteditable="true" class="val-cs"></td><td contenteditable="true" class="val-cs"></td><td data-html2canvas-ignore="true"><button class="btn-delete" onclick="hapusBaris(this)"><i class="ph ph-trash"></i></button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div> <!-- End Area Cetak Sosmed -->
         </div>
 
-        <div id="area-cetak">
+
+        <!-- =========================================================
+             DASHBOARD 2: IKLAN BERBAYAR (ADS)
+             ========================================================= -->
+        <div id="view-ads" class="view-section">
             
-            <!-- KOP IDENTITAS (KOSONG / TANPA ARAHAN) -->
-            <div class="kop-identitas">
-                <div class="kop-title">
-                    <h1>LAPORAN KINERJA DIGITAL</h1>
-                    <p style="color: var(--text-muted); font-size: 14px;">Di-generate otomatis oleh ReportSync Analytics</p>
+            <div class="action-header" data-html2canvas-ignore="true">
+                <h2>Laporan Iklan (Ads)</h2>
+                <button class="btn-blue" onclick="unduhPDF('cetak-ads', 'Laporan_Iklan_Ads.pdf')">
+                    <i class="ph ph-download-simple"></i> Download Laporan Iklan
+                </button>
+            </div>
+
+            <!-- KERTAS LAPORAN IKLAN (YANG DI-PRINT) -->
+            <div id="cetak-ads" class="area-cetak">
+                
+                <div class="kop-identitas">
+                    <div class="kop-title">
+                        <h1>Kinerja Iklan Berbayar</h1>
+                        <p style="color: var(--text-muted); font-size: 14px;">Laporan Konversi & ROI (Ads)</p>
+                    </div>
+                    <div class="kop-details">
+                        <div class="identitas-row"><span class="identitas-label">Nama PIC</span><span class="identitas-val" contenteditable="true"></span></div>
+                        <div class="identitas-row"><span class="identitas-label">Jabatan</span><span class="identitas-val" contenteditable="true"></span></div>
+                        <div class="identitas-row"><span class="identitas-label">Periode</span><span class="identitas-val" contenteditable="true"></span></div>
+                    </div>
                 </div>
-                <div class="kop-details">
-                    <div class="identitas-row"><span class="identitas-label">Nama PIC</span><span class="identitas-val" contenteditable="true"></span></div>
-                    <div class="identitas-row"><span class="identitas-label">Jabatan</span><span class="identitas-val" contenteditable="true"></span></div>
-                    <div class="identitas-row"><span class="identitas-label">Periode Laporan</span><span class="identitas-val" contenteditable="true"></span></div>
-                    <div class="identitas-row"><span class="identitas-label">Tanggal Disusun</span><span class="identitas-val" contenteditable="true"></span></div>
+
+                <div class="dash-section">
+                    <div class="dash-grid">
+                        <div class="dash-card"><span class="dash-label">Total Spend</span><span class="dash-value" id="out-spend">Rp 0</span></div>
+                        <div class="dash-card"><span class="dash-label">Total Leads</span><span class="dash-value" id="out-leads">0</span></div>
+                        <div class="dash-card"><span class="dash-label">Avg Cost Per Lead</span><span class="dash-value" id="out-cpl" style="color:#007AFF;">Rp 0</span></div>
+                        <div class="dash-card"><span class="dash-label">Avg ROAS</span><span class="dash-value" id="out-roas">0x</span></div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- =========================================================
-                 BAGIAN I: MEDIA SOSIAL ORGANIK
-                 ========================================================= -->
-            <div class="section-divider"><i class="ph ph-instagram-logo"></i> BAGIAN I: KINERJA MEDIA SOSIAL ORGANIK</div>
-
-            <!-- Dashboard Media Sosial -->
-            <div class="dash-section">
-                <div class="dash-grid">
-                    <div class="dash-card"><span class="dash-label">Total Reach Jaringan</span><span class="dash-value" id="out-reach">0</span></div>
-                    <div class="dash-card"><span class="dash-label">Total Plays Video/Reels</span><span class="dash-value" id="out-plays">0</span></div>
-                    <div class="dash-card"><span class="dash-label">Total Interaksi CS</span><span class="dash-value" id="out-cs">0</span></div>
-                    <div class="dash-card"><span class="dash-label">Status Organik</span><span class="dash-value" style="color:#34C759;">Aktif</span></div>
+                <div class="ai-box">
+                    <h2><i class="ph ph-sparkle"></i> AI Insight Iklan Berbayar</h2>
+                    <p id="out-ai-ads">Silakan isi data iklan di tabel bawah agar AI dapat menganalisa konversi...</p>
                 </div>
-            </div>
 
-            <!-- AI Media Sosial -->
-            <div class="ai-box">
-                <h2><i class="ph ph-sparkle"></i> Analisis AI (Media Sosial)</h2>
-                <p id="out-ai-sosmed">Silakan isi data media sosial di bawah. AI akan merumuskan insight di sini...</p>
-            </div>
-
-            <!-- Tabel-Tabel Media Sosial -->
-            <div class="tabel-section">
-                <div class="tabel-header">
-                    <h3>1. Rincian Pekerjaan & Kendala</h3>
-                    <button class="btn-outline" onclick="addR('tbl-pekerjaan')" data-html2canvas-ignore="true">+ Tambah Baris</button>
+                <div class="tabel-section">
+                    <div class="tabel-header"><h3>1. Rincian Kinerja Kampanye Iklan</h3><button class="btn-outline" onclick="addR('tbl-ads')" data-html2canvas-ignore="true">+ Tambah</button></div>
+                    <table id="tbl-ads">
+                        <thead><tr><th>Kampanye</th><th>Targeting</th><th>Spend (Rp)</th><th>Impressions</th><th>Clicks</th><th>Leads</th><th class="auto-calc">CTR (%)</th><th class="auto-calc">CPC (Rp)</th><th class="auto-calc">CPM (Rp)</th><th class="auto-calc">Cost/Lead</th><th>ROAS (x)</th><th data-html2canvas-ignore="true">Aksi</th></tr></thead>
+                        <tbody oninput="hitungAds()">
+                            <tr>
+                                <td contenteditable="true"></td><td contenteditable="true"></td>
+                                <td contenteditable="true" class="ads-spend"></td>
+                                <td contenteditable="true" class="ads-imp"></td>
+                                <td contenteditable="true" class="ads-clicks"></td>
+                                <td contenteditable="true" class="ads-leads"></td>
+                                <td class="auto-calc ads-ctr">0</td>
+                                <td class="auto-calc ads-cpc">0</td>
+                                <td class="auto-calc ads-cpm">0</td>
+                                <td class="auto-calc ads-cpl">0</td>
+                                <td contenteditable="true" class="ads-roas"></td>
+                                <td data-html2canvas-ignore="true"><button class="btn-delete" onclick="hapusBaris(this)"><i class="ph ph-trash"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <table id="tbl-pekerjaan">
-                    <thead><tr><th>Aktivitas Pekerjaan</th><th>Status</th><th>Kendala</th><th>Dampak</th><th>Solusi</th><th data-html2canvas-ignore="true">Aksi</th></tr></thead>
-                    <tbody><tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td data-html2canvas-ignore="true"><button class="btn-delete" onclick="hapusBaris(this)"><i class="ph ph-trash"></i></button></td></tr></tbody>
-                </table>
-            </div>
 
-            <div class="tabel-section">
-                <div class="tabel-header">
-                    <h3>2. Pertumbuhan Platform & Demografi</h3>
-                    <button class="btn-outline" onclick="addR('tbl-growth')" data-html2canvas-ignore="true">+ Tambah Baris</button>
-                </div>
-                <table id="tbl-growth">
-                    <thead><tr><th>Platform</th><th>Foll. Awal</th><th>Foll. Akhir</th><th>Total Viewers</th><th>Lokasi Penonton (Kota/Negara)</th><th>Rasio Foll/Non-Foll</th><th data-html2canvas-ignore="true">Aksi</th></tr></thead>
-                    <tbody><tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td data-html2canvas-ignore="true"><button class="btn-delete" onclick="hapusBaris(this)"><i class="ph ph-trash"></i></button></td></tr></tbody>
-                </table>
-            </div>
-
-            <div class="tabel-section">
-                <div class="tabel-header">
-                    <h3>3. Kinerja Konten Video / Reels (Viralitas)</h3>
-                    <button class="btn-outline" onclick="addR('tbl-reels')" data-html2canvas-ignore="true">+ Tambah Baris</button>
-                </div>
-                <table id="tbl-reels">
-                    <thead><tr><th>Nama Konten</th><th>Total Plays</th><th>Non-Foll Reached (%)</th><th>Watch Time (Retensi)</th><th>Shares</th><th>Saves</th><th data-html2canvas-ignore="true">Aksi</th></tr></thead>
-                    <tbody oninput="hitungAuto()">
-                        <tr><td contenteditable="true"></td><td contenteditable="true" class="val-plays"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td data-html2canvas-ignore="true"><button class="btn-delete" onclick="hapusBaris(this)"><i class="ph ph-trash"></i></button></td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="tabel-section">
-                <div class="tabel-header">
-                    <h3>4. Kinerja Konten Story (Retensi & Komunitas)</h3>
-                    <button class="btn-outline" onclick="addR('tbl-story')" data-html2canvas-ignore="true">+ Tambah Baris</button>
-                </div>
-                <table id="tbl-story">
-                    <thead><tr><th>Nama Konten</th><th>Reach</th><th>Completion Rate (%)</th><th>Taps Forward</th><th>Taps Back</th><th>Exits</th><th>Link Clicks</th><th data-html2canvas-ignore="true">Aksi</th></tr></thead>
-                    <tbody oninput="hitungAuto()">
-                        <tr><td contenteditable="true"></td><td contenteditable="true" class="val-reach"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td data-html2canvas-ignore="true"><button class="btn-delete" onclick="hapusBaris(this)"><i class="ph ph-trash"></i></button></td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="tabel-section">
-                <div class="tabel-header">
-                    <h3>5. Aktivitas Interaksi Audiens (Customer Service)</h3>
-                    <button class="btn-outline" onclick="addR('tbl-interaksi')" data-html2canvas-ignore="true">+ Tambah Baris</button>
-                </div>
-                <table id="tbl-interaksi">
-                    <thead><tr><th>Platform</th><th>Komentar Dibalas</th><th>DM Dibalas</th><th>Pertanyaan Layanan</th><th>Keluhan</th><th>Testimoni</th><th data-html2canvas-ignore="true">Aksi</th></tr></thead>
-                    <tbody oninput="hitungAuto()">
-                        <tr><td contenteditable="true"></td><td contenteditable="true" class="val-cs"></td><td contenteditable="true" class="val-cs"></td><td contenteditable="true" class="val-cs"></td><td contenteditable="true" class="val-cs"></td><td contenteditable="true" class="val-cs"></td><td data-html2canvas-ignore="true"><button class="btn-delete" onclick="hapusBaris(this)"><i class="ph ph-trash"></i></button></td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-
-            <!-- =========================================================
-                 BAGIAN II: IKLAN BERBAYAR (ADS)
-                 ========================================================= -->
-            <div class="section-divider" style="margin-top: 60px;"><i class="ph ph-megaphone"></i> BAGIAN II: KINERJA IKLAN BERBAYAR (ADS)</div>
-
-            <!-- Dashboard Iklan -->
-            <div class="dash-section">
-                <div class="dash-grid">
-                    <div class="dash-card"><span class="dash-label">Total Pengeluaran (Spend)</span><span class="dash-value" id="out-spend">Rp 0</span></div>
-                    <div class="dash-card"><span class="dash-label">Total Leads / Akuisisi</span><span class="dash-value" id="out-leads">0</span></div>
-                    <div class="dash-card"><span class="dash-label">Rata-rata Cost Per Lead</span><span class="dash-value" id="out-cpl" style="color:#007AFF;">Rp 0</span></div>
-                    <div class="dash-card"><span class="dash-label">Rata-rata ROAS</span><span class="dash-value" id="out-roas">0x</span></div>
-                </div>
-            </div>
-
-            <!-- AI Iklan -->
-            <div class="ai-box">
-                <h2><i class="ph ph-sparkle"></i> Analisis AI (Iklan Berbayar)</h2>
-                <p id="out-ai-ads">Silakan isi data iklan di bawah. AI akan merumuskan insight ROI di sini...</p>
-            </div>
-
-            <!-- Tabel Iklan -->
-            <div class="tabel-section">
-                <div class="tabel-header">
-                    <h3>6. Rincian Kinerja Iklan Berbayar (Ads & ROI)</h3>
-                    <button class="btn-outline" onclick="addR('tbl-ads')" data-html2canvas-ignore="true">+ Tambah Baris</button>
-                </div>
-                <table id="tbl-ads">
-                    <thead><tr><th>Kampanye</th><th>Targeting</th><th>Spend (Rp)</th><th>Impressions</th><th>Clicks</th><th>Leads</th><th class="auto-calc">CTR (%)</th><th class="auto-calc">CPC (Rp)</th><th class="auto-calc">CPM (Rp)</th><th class="auto-calc">Cost/Lead</th><th>ROAS (x)</th><th data-html2canvas-ignore="true">Aksi</th></tr></thead>
-                    <tbody oninput="hitungAuto()">
-                        <tr>
-                            <td contenteditable="true"></td><td contenteditable="true"></td>
-                            <td contenteditable="true" class="ads-spend"></td>
-                            <td contenteditable="true" class="ads-imp"></td>
-                            <td contenteditable="true" class="ads-clicks"></td>
-                            <td contenteditable="true" class="ads-leads"></td>
-                            <td class="auto-calc ads-ctr">0</td>
-                            <td class="auto-calc ads-cpc">0</td>
-                            <td class="auto-calc ads-cpm">0</td>
-                            <td class="auto-calc ads-cpl">0</td>
-                            <td contenteditable="true" class="ads-roas"></td>
-                            <td data-html2canvas-ignore="true"><button class="btn-delete" onclick="hapusBaris(this)"><i class="ph ph-trash"></i></button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-        </div> <!-- End of Area Cetak -->
+            </div> <!-- End Area Cetak Ads -->
+        </div>
 
     </main>
 
     <script>
-        // 1. Tambah Baris Manual
+        // Tab Navigasi
+        function switchTab(viewId, btnElement) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.querySelectorAll('.view-section').forEach(view => view.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        // Tambah/Hapus Baris
         function addR(tableId) {
             const tbody = document.querySelector(`#${tableId} tbody`);
             const row = tbody.rows[0].cloneNode(true);
@@ -255,39 +268,38 @@
             });
             tbody.appendChild(row);
         }
-
-        // 2. Hapus Baris Manual
         function hapusBaris(btn) {
-            const tbody = btn.closest('tbody');
-            if(tbody.rows.length > 1) {
-                if(confirm("Hapus baris ini?")) {
-                    btn.closest('tr').remove();
-                    hitungAuto(); // Hitung ulang setelah hapus
-                }
-            } else {
-                alert("Jangan hapus baris terakhir. Kosongkan saja isinya.");
+            if(btn.closest('tbody').rows.length > 1 && confirm("Hapus baris ini?")) {
+                btn.closest('tr').remove();
+                hitungSosmed(); hitungAds();
             }
         }
 
-        // 3. Kalkulator Cerdas Otomatis
-        function hitungAuto() {
-            const parseNum = (str) => parseFloat(str.replace(/[^0-9.-]+/g,"")) || 0;
-            const getSum = (className) => {
-                let sum = 0;
-                document.querySelectorAll('.' + className).forEach(el => sum += parseNum(el.innerText));
-                return sum;
-            };
+        // Helper Parsing Angka
+        const parseNum = (str) => parseFloat(str.replace(/[^0-9.-]+/g,"")) || 0;
+        const getSum = (className) => {
+            let sum = 0;
+            document.querySelectorAll('.' + className).forEach(el => sum += parseNum(el.innerText));
+            return sum;
+        };
 
-            // Hitung Sosmed
-            let totalPlays = getSum('val-plays');
-            let totalReach = getSum('val-reach');
-            let totalCS = getSum('val-cs');
+        // HITUNG SOSMED
+        function hitungSosmed() {
+            let plays = getSum('val-plays'), reach = getSum('val-reach'), cs = getSum('val-cs');
             
-            // Hitung Ads
-            let grandSpend = 0;
-            let grandLeads = 0;
-            let totalRoas = 0;
-            let rowRoas = 0;
+            document.getElementById('out-plays').innerText = plays.toLocaleString('id-ID');
+            document.getElementById('out-reach').innerText = reach.toLocaleString('id-ID');
+            document.getElementById('out-cs').innerText = cs.toLocaleString('id-ID');
+
+            let ai = "📊 Ringkasan Organik:\n\n";
+            if (plays > 0 || cs > 0) ai += `Kinerja stabil. Tercatat ${plays.toLocaleString('id-ID')} plays video dan ${cs.toLocaleString('id-ID')} interaksi audiens (CS). Jangkauan organik bekerja sesuai target.`;
+            else ai = "Belum ada data disisipkan.";
+            document.getElementById('out-ai-sosmed').innerText = ai;
+        }
+
+        // HITUNG ADS
+        function hitungAds() {
+            let grandSpend = 0, grandLeads = 0, totalRoas = 0, rowRoas = 0;
 
             document.querySelectorAll('#tbl-ads tbody tr').forEach(row => {
                 let spend = parseNum(row.querySelector('.ads-spend').innerText);
@@ -296,7 +308,6 @@
                 let leads = parseNum(row.querySelector('.ads-leads').innerText);
                 let roas = parseNum(row.querySelector('.ads-roas').innerText);
 
-                // Rumus Otomatis
                 let ctr = imp > 0 ? ((clicks / imp) * 100).toFixed(2) : 0;
                 let cpc = clicks > 0 ? Math.round(spend / clicks) : 0;
                 let cpm = imp > 0 ? Math.round((spend / imp) * 1000) : 0;
@@ -307,67 +318,39 @@
                 row.querySelector('.ads-cpm').innerText = cpm.toLocaleString('id-ID');
                 row.querySelector('.ads-cpl').innerText = cpl.toLocaleString('id-ID');
 
-                grandSpend += spend;
-                grandLeads += leads;
+                grandSpend += spend; grandLeads += leads;
                 if(roas > 0) { totalRoas += roas; rowRoas++; }
             });
 
             let avgCpl = grandLeads > 0 ? Math.round(grandSpend / grandLeads) : 0;
             let avgRoas = rowRoas > 0 ? (totalRoas / rowRoas).toFixed(1) : 0;
 
-            // Update Dashboard
-            document.getElementById('out-plays').innerText = totalPlays.toLocaleString('id-ID');
-            document.getElementById('out-reach').innerText = totalReach.toLocaleString('id-ID');
-            document.getElementById('out-cs').innerText = totalCS.toLocaleString('id-ID');
-            
             document.getElementById('out-spend').innerText = 'Rp ' + grandSpend.toLocaleString('id-ID');
             document.getElementById('out-leads').innerText = grandLeads.toLocaleString('id-ID');
             document.getElementById('out-cpl').innerText = 'Rp ' + avgCpl.toLocaleString('id-ID');
             document.getElementById('out-roas').innerText = avgRoas + 'x';
 
-            // Panggil AI
-            generateAI(totalPlays, totalCS, grandSpend, avgCpl, avgRoas);
+            let ai = "📊 Ringkasan Iklan:\n\n";
+            if (grandSpend > 0) {
+                if (avgRoas >= 3) ai += `Kampanye Menguntungkan! Tercatat ROAS rata-rata ${avgRoas}x dengan CPL Rp ${avgCpl.toLocaleString('id-ID')}. Saran: Naikkan budget harian pada winning campaign ini.`;
+                else ai += `ROAS rata-rata berada di ${avgRoas}x. Lakukan A/B testing materi iklan/copywriting untuk menurunkan Cost per Lead yang saat ini Rp ${avgCpl.toLocaleString('id-ID')}.`;
+            } else ai = "Belum ada data disisipkan.";
+            document.getElementById('out-ai-ads').innerText = ai;
         }
 
-        // 4. Insight AI (DIPISAH)
-        function generateAI(plays, cs, spend, cpl, roas) {
-            
-            // AI Untuk Sosmed
-            let aiSosmed = "📊 Analisis Kinerja Organik:\n\n";
-            if (plays > 0 || cs > 0) {
-                aiSosmed += `Kinerja stabil. Tercatat ${plays.toLocaleString('id-ID')} plays video dan ${cs.toLocaleString('id-ID')} interaksi audiens. Jangkauan organik berhasil bekerja sesuai target KPI.`;
-            } else {
-                aiSosmed = "Silakan isi data media sosial di tabel bawah agar AI dapat memberikan ringkasan analisis untuk Anda.";
-            }
-            document.getElementById('out-ai-sosmed').innerText = aiSosmed;
+        // FUNGSI UNDUH MANDIRI
+        function unduhPDF(areaId, fileName) {
+            if(areaId === 'cetak-sosmed') hitungSosmed();
+            if(areaId === 'cetak-ads') hitungAds();
 
-            // AI Untuk Ads
-            let aiAds = "📊 Analisis Kinerja Iklan:\n\n";
-            if (spend > 0) {
-                if (roas >= 3) {
-                    aiAds += `Kampanye Iklan Menguntungkan! Tercatat rata-rata ROAS ${roas}x dengan CPL di angka Rp ${cpl.toLocaleString('id-ID')}. Disarankan untuk melakukan scale-up (menambah budget) pada campaign ini.`;
-                } else {
-                    aiAds += `Tercatat ROAS sebesar ${roas}x. Disarankan melakukan A/B testing materi visual/copywriting untuk menurunkan Cost per Lead (CPL) yang saat ini berada di Rp ${cpl.toLocaleString('id-ID')}.`;
-                }
-            } else {
-                aiAds = "Silakan isi data iklan di tabel bawah agar AI dapat memberikan rekomendasi ROI untuk Anda.";
-            }
-            document.getElementById('out-ai-ads').innerText = aiAds;
-        }
-
-        // 5. Cetak PDF
-        function unduhPDF() {
-            hitungAuto(); 
-            const element = document.getElementById('area-cetak'); 
-            
+            const element = document.getElementById(areaId); 
             const opt = { 
                 margin: [10, 10, 10, 10], 
-                filename: 'Laporan_Digital_Terpadu.pdf', 
+                filename: fileName, 
                 image: { type: 'jpeg', quality: 0.98 }, 
                 html2canvas: { scale: 2, useCORS: true }, 
                 jsPDF: { unit: 'mm', format: 'a3', orientation: 'portrait' } 
             };
-            
             html2pdf().set(opt).from(element).save();
         }
     </script>
