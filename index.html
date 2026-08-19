@@ -92,7 +92,6 @@
             
             <div class="tabs">
                 <div class="tab-btn active" id="btn-tab-data" onclick="gantiTab('data')">Data Pelamar</div>
-                <!-- Tab ini akan disembunyikan secara otomatis jika Owner yang login -->
                 <div class="tab-btn" id="btn-tab-soal" onclick="gantiTab('soal')">Pengaturan Soal</div>
             </div>
 
@@ -104,7 +103,6 @@
             <div id="tab-data-pelamar">
                 <div style="text-align: right; margin-bottom: 10px;">
                     <button class="btn btn-green" style="width:auto; padding:8px 15px; font-size:14px;" onclick="unduhDataCSV()">📥 Unduh Rekap (CSV)</button>
-                    <!-- Tombol Hapus hanya muncul untuk Admin (opsional) -->
                     <button class="btn btn-small" id="btn-hapus-semua" style="padding:8px 15px; font-size:14px; margin-left:5px;" onclick="hapusSemuaData()">🗑️ Hapus Semua</button>
                 </div>
                 <table>
@@ -113,7 +111,6 @@
                 </table>
             </div>
 
-            <!-- Tab Edit Soal Khusus Admin -->
             <div id="tab-edit-soal" class="card" style="margin-top:0; border-top:none;">
                 <h3 style="margin-top:0;">Edit Pertanyaan MBTI</h3>
                 <div id="form-edit-soal-container"></div>
@@ -124,15 +121,16 @@
 
     <script>
         // ==============================================================
-        // WAJIB DIISI: KONFIGURASI GITHUB API AGAR DATA BISA MASUK
+        // KONFIGURASI GITHUB API (TELAH DIMASUKKAN TOKEN ANDA)
         // ==============================================================
-        const GITHUB_USERNAME = "USERNAME_GITHUB_ANDA"; 
-        const GITHUB_REPO = "NAMA_REPO_ANDA"; 
-        const GITHUB_TOKEN = "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+        const GITHUB_USERNAME = "kerjaan203-source"; 
+        // PENTING: Jika nama repository Anda BUKAN "kerjaan203-source.github.io", mohon ganti baris di bawah ini dengan nama repository yang benar.
+        const GITHUB_REPO = "kerjaan203-source.github.io"; 
+        const GITHUB_TOKEN = "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";
 
         let roleAktif = ""; 
         let dataPelamarGlobal = []; 
-        let issueIdsTerkini = []; // Untuk kebutuhan hapus data API
+        let issueIdsTerkini = []; 
         
         // KAMUS MBTI SUPER DETAIL
         const kamusMBTI = {
@@ -305,7 +303,6 @@
             {q: "Saya merasa nyaman bekerja jika...", a: "Semua sudah diputuskan pasti", b: "Dibiarkan terbuka untuk opsi lain", type: "JP"}
         ];
 
-        // INIT & PELAMAR
         async function initApp() {
             document.getElementById('loading').style.display = 'block';
             document.getElementById('loading-text').innerText = "Menyiapkan Kuesioner...";
@@ -315,7 +312,7 @@
                 });
                 const issues = await res.json();
                 if(issues.length > 0) { soalMBTI = JSON.parse(issues[0].body); }
-            } catch(e) { console.warn("Pakai soal default, Github belum terhubung sempurna."); }
+            } catch(e) { console.warn("Pakai soal default."); }
             
             renderSoalPelamar();
             document.getElementById('loading').style.display = 'none';
@@ -339,7 +336,7 @@
 
         function mulaiTes() {
             if(!document.getElementById('nama').value || !document.getElementById('tgl_lahir').value || !document.getElementById('posisi').value) {
-                alert("Harap lengkapi form data diri (Nama, Tgl Lahir, Posisi wajib diisi)!"); return;
+                alert("Harap lengkapi form data diri!"); return;
             }
             document.getElementById('view-datadiri').style.display = 'none';
             document.getElementById('footer-hrd').style.display = 'none';
@@ -371,7 +368,6 @@
                 mbti: mbti, tanggal_tes: new Date().toISOString()
             };
 
-            // MENGIRIM DATA KE GITHUB API (AGAR TERKUMPUL DARI SEMUA HP PELAMAR)
             try {
                 const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/issues`, {
                     method: 'POST',
@@ -388,16 +384,13 @@
                     document.getElementById('view-tes').style.display = 'none';
                     document.getElementById('view-terimakasih').style.display = 'block';
                     window.scrollTo(0, 0);
-                } else {
-                    throw new Error("Gagal");
-                }
+                } else { throw new Error("Gagal"); }
             } catch(e) {
                 document.getElementById('loading').style.display = 'none';
-                alert("Gagal mengirim data. Pastikan konfigurasi Token GitHub di dalam kode sudah diisi dengan benar.");
+                alert("Gagal mengirim data. Pastikan konfigurasi Token GitHub di dalam kode sudah benar.");
             }
         }
 
-        // LOGIN & DASBOR & HAK AKSES
         function showLogin() {
             document.getElementById('view-datadiri').style.display = 'none';
             document.getElementById('footer-hrd').style.display = 'none';
@@ -425,15 +418,14 @@
             
             if(showStats) document.getElementById('stat-container').style.display = "flex";
             
-            // LOGIKA HAK AKSES TABS
             if(roleAktif === "Owner") {
-                document.getElementById('btn-tab-soal').style.display = "none"; // Sembunyikan tab edit soal untuk Owner
-                document.getElementById('btn-hapus-semua').style.display = "none"; // Sembunyikan tombol hapus untuk Owner
+                document.getElementById('btn-tab-soal').style.display = "none";
+                document.getElementById('btn-hapus-semua').style.display = "none";
                 gantiTab('data');
             } else {
-                document.getElementById('btn-tab-soal').style.display = "block"; // Munculkan tab edit soal untuk Admin
+                document.getElementById('btn-tab-soal').style.display = "block"; 
                 document.getElementById('btn-hapus-semua').style.display = "inline-block";
-                renderFormEditSoal(); // Hanya Admin yang perlu render form ini
+                renderFormEditSoal(); 
             }
             
             fetchDataPelamar(); 
@@ -518,7 +510,6 @@
             fetchDataPelamar();
         }
 
-        // FUNGSI PENDUKUNG ANALISIS & PDF
         function hitungUmur(tglLahir) {
             const dob = new Date(tglLahir);
             const diff_ms = Date.now() - dob.getTime();
@@ -636,7 +627,6 @@
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
-        // EDIT SOAL (HANYA ADMIN)
         function renderFormEditSoal() {
             const container = document.getElementById('form-edit-soal-container'); container.innerHTML = "";
             soalMBTI.forEach((soal, i) => {
