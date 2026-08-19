@@ -44,7 +44,7 @@
 </head>
 <body>
 
-    <div id="loading"><div class="spinner"></div><h3 id="loading-text" style="margin-top:20px;">Memuat...</h3></div>
+    <div id="loading"><div class="spinner"></div><h3 id="loading-text" style="margin-top:20px;">Memuat Sistem...</h3></div>
 
     <div class="container" id="main-app">
         <!-- PELAMAR -->
@@ -67,7 +67,7 @@
         <div id="view-terimakasih" class="card" style="text-align:center; padding: 50px 30px;">
             <h1 style="font-size: 50px; margin: 0;">🎉</h1>
             <h2>Terima Kasih!</h2>
-            <p>Data diri dan hasil tes Anda telah direkam oleh sistem.</p>
+            <p>Data diri dan hasil tes Anda telah berhasil dikirim ke HRD.</p>
         </div>
 
         <div class="footer-link" id="footer-hrd"><a href="#" onclick="showLogin()">Portal Internal</a></div>
@@ -92,6 +92,7 @@
             
             <div class="tabs">
                 <div class="tab-btn active" id="btn-tab-data" onclick="gantiTab('data')">Data Pelamar</div>
+                <!-- Tab ini akan disembunyikan secara otomatis jika Owner yang login -->
                 <div class="tab-btn" id="btn-tab-soal" onclick="gantiTab('soal')">Pengaturan Soal</div>
             </div>
 
@@ -103,7 +104,8 @@
             <div id="tab-data-pelamar">
                 <div style="text-align: right; margin-bottom: 10px;">
                     <button class="btn btn-green" style="width:auto; padding:8px 15px; font-size:14px;" onclick="unduhDataCSV()">📥 Unduh Rekap (CSV)</button>
-                    <button class="btn btn-small" style="padding:8px 15px; font-size:14px; margin-left:5px;" onclick="hapusSemuaData()">🗑️ Hapus Semua</button>
+                    <!-- Tombol Hapus hanya muncul untuk Admin (opsional) -->
+                    <button class="btn btn-small" id="btn-hapus-semua" style="padding:8px 15px; font-size:14px; margin-left:5px;" onclick="hapusSemuaData()">🗑️ Hapus Semua</button>
                 </div>
                 <table>
                     <thead><tr><th>Nama</th><th>Posisi</th><th>Tanggal</th><th>MBTI</th><th>Aksi</th></tr></thead>
@@ -111,6 +113,7 @@
                 </table>
             </div>
 
+            <!-- Tab Edit Soal Khusus Admin -->
             <div id="tab-edit-soal" class="card" style="margin-top:0; border-top:none;">
                 <h3 style="margin-top:0;">Edit Pertanyaan MBTI</h3>
                 <div id="form-edit-soal-container"></div>
@@ -120,7 +123,16 @@
     </div>
 
     <script>
-        let roleAktif = ""; let dataPelamarGlobal = []; 
+        // ==============================================================
+        // WAJIB DIISI: KONFIGURASI GITHUB API AGAR DATA BISA MASUK
+        // ==============================================================
+        const GITHUB_USERNAME = "USERNAME_GITHUB_ANDA"; 
+        const GITHUB_REPO = "NAMA_REPO_ANDA"; 
+        const GITHUB_TOKEN = "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+
+        let roleAktif = ""; 
+        let dataPelamarGlobal = []; 
+        let issueIdsTerkini = []; // Untuk kebutuhan hapus data API
         
         // KAMUS MBTI SUPER DETAIL
         const kamusMBTI = {
@@ -270,7 +282,6 @@
             }
         };
 
-        // SOAL BAWAAN
         let soalMBTI = [
             {q: "Di akhir pekan setelah bekerja, saya lebih suka...", a: "Berkumpul bersama teman", b: "Bersantai di rumah", type: "EI"},
             {q: "Saat bekerja dalam tim, saya biasanya...", a: "Aktif berbicara", b: "Suka bekerja mandiri", type: "EI"},
@@ -295,10 +306,19 @@
         ];
 
         // INIT & PELAMAR
-        function initApp() {
-            let savedSoal = localStorage.getItem('db_mbti_soal');
-            if(savedSoal) { soalMBTI = JSON.parse(savedSoal); }
+        async function initApp() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('loading-text').innerText = "Menyiapkan Kuesioner...";
+            try {
+                const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/issues?labels=config-soal&state=open`, {
+                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+                });
+                const issues = await res.json();
+                if(issues.length > 0) { soalMBTI = JSON.parse(issues[0].body); }
+            } catch(e) { console.warn("Pakai soal default, Github belum terhubung sempurna."); }
+            
             renderSoalPelamar();
+            document.getElementById('loading').style.display = 'none';
         }
         
         function renderSoalPelamar() {
@@ -327,12 +347,12 @@
             window.scrollTo(0, 0);
         }
 
-        function hitungDanKirim() {
+        async function hitungDanKirim() {
             for(let i = 1; i <= 20; i++) {
                 if(!document.querySelector(`input[name="q${i}"]:checked`)) { alert("Mohon jawab seluruh 20 pertanyaan."); return; }
             }
             document.getElementById('loading').style.display = 'block';
-            document.getElementById('loading-text').innerText = "Menyimpan Data...";
+            document.getElementById('loading-text').innerText = "Mengirim Data ke Server HRD...";
             
             let scores = { E:0, I:0, S:0, N:0, T:0, F:0, J:0, P:0 };
             for(let i = 1; i <= 20; i++) {
@@ -351,18 +371,33 @@
                 mbti: mbti, tanggal_tes: new Date().toISOString()
             };
 
-            setTimeout(() => {
-                let db = JSON.parse(localStorage.getItem('db_mbti_pelamar')) || [];
-                db.push(dataPelamar);
-                localStorage.setItem('db_mbti_pelamar', JSON.stringify(db));
+            // MENGIRIM DATA KE GITHUB API (AGAR TERKUMPUL DARI SEMUA HP PELAMAR)
+            try {
+                const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/issues`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        title: `Pelamar: ${dataPelamar.nama} - ${dataPelamar.posisi}`, 
+                        labels: ["data-pelamar"], 
+                        body: JSON.stringify(dataPelamar) 
+                    })
+                });
+                
+                if(res.ok) {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('view-tes').style.display = 'none';
+                    document.getElementById('view-terimakasih').style.display = 'block';
+                    window.scrollTo(0, 0);
+                } else {
+                    throw new Error("Gagal");
+                }
+            } catch(e) {
                 document.getElementById('loading').style.display = 'none';
-                document.getElementById('view-tes').style.display = 'none';
-                document.getElementById('view-terimakasih').style.display = 'block';
-                window.scrollTo(0, 0);
-            }, 800); 
+                alert("Gagal mengirim data. Pastikan konfigurasi Token GitHub di dalam kode sudah diisi dengan benar.");
+            }
         }
 
-        // LOGIN & DASBOR
+        // LOGIN & DASBOR & HAK AKSES
         function showLogin() {
             document.getElementById('view-datadiri').style.display = 'none';
             document.getElementById('footer-hrd').style.display = 'none';
@@ -371,17 +406,37 @@
 
         function cekPIN() {
             const pin = document.getElementById('pin-input').value;
-            if(pin === "9999") { roleAktif = "Admin"; masukDasbor("Dasbor Admin HRD", false); } 
-            else if(pin === "1111") { roleAktif = "Owner"; masukDasbor("Executive Dashboard", true); } 
-            else { alert("Akses Ditolak: PIN Tidak Valid."); document.getElementById('pin-input').value = ""; }
+            if(pin === "9999") { 
+                roleAktif = "Admin"; 
+                masukDasbor("Dasbor Admin HRD", false); 
+            } else if(pin === "1111") { 
+                roleAktif = "Owner"; 
+                masukDasbor("Executive Dashboard (Owner)", true); 
+            } else { 
+                alert("Akses Ditolak: PIN Tidak Valid."); 
+                document.getElementById('pin-input').value = ""; 
+            }
         }
 
         function masukDasbor(title, showStats) {
             document.getElementById('view-login').style.display = "none";
             document.getElementById('dash-title').innerText = title;
             document.getElementById('view-dashboard').style.display = "block";
+            
             if(showStats) document.getElementById('stat-container').style.display = "flex";
-            fetchDataPelamar(); renderFormEditSoal(); 
+            
+            // LOGIKA HAK AKSES TABS
+            if(roleAktif === "Owner") {
+                document.getElementById('btn-tab-soal').style.display = "none"; // Sembunyikan tab edit soal untuk Owner
+                document.getElementById('btn-hapus-semua').style.display = "none"; // Sembunyikan tombol hapus untuk Owner
+                gantiTab('data');
+            } else {
+                document.getElementById('btn-tab-soal').style.display = "block"; // Munculkan tab edit soal untuk Admin
+                document.getElementById('btn-hapus-semua').style.display = "inline-block";
+                renderFormEditSoal(); // Hanya Admin yang perlu render form ini
+            }
+            
+            fetchDataPelamar(); 
         }
 
         function gantiTab(tabName) {
@@ -389,50 +444,81 @@
             document.getElementById('btn-tab-soal').classList.remove('active');
             document.getElementById('tab-data-pelamar').style.display = "none";
             document.getElementById('tab-edit-soal').style.display = "none";
-            if(tabName === 'data') { document.getElementById('btn-tab-data').classList.add('active'); document.getElementById('tab-data-pelamar').style.display = "block"; } 
-            else { document.getElementById('btn-tab-soal').classList.add('active'); document.getElementById('tab-edit-soal').style.display = "block"; }
+            if(tabName === 'data') { 
+                document.getElementById('btn-tab-data').classList.add('active'); 
+                document.getElementById('tab-data-pelamar').style.display = "block"; 
+            } else { 
+                document.getElementById('btn-tab-soal').classList.add('active'); 
+                document.getElementById('tab-edit-soal').style.display = "block"; 
+            }
         }
 
-        function fetchDataPelamar() {
+        async function fetchDataPelamar() {
             const tableBody = document.getElementById('tabel-body');
-            dataPelamarGlobal = JSON.parse(localStorage.getItem('db_mbti_pelamar')) || [];
-            tableBody.innerHTML = "";
+            tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Mengambil data dari server GitHub...</td></tr>`;
+            dataPelamarGlobal = []; 
+            issueIdsTerkini = [];
 
-            if(dataPelamarGlobal.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Belum ada data masuk.</td></tr>`;
-                if(roleAktif === "Owner") { document.getElementById('stat-total').innerText = "0"; document.getElementById('stat-mbti').innerText = "-"; }
-                return;
-            }
+            try {
+                const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/issues?labels=data-pelamar&state=open`, {
+                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+                });
+                const issues = await res.json();
+                tableBody.innerHTML = "";
 
-            let total = 0; let countMBTI = {};
-            [...dataPelamarGlobal].reverse().forEach(data => {
-                total++; countMBTI[data.mbti] = (countMBTI[data.mbti] || 0) + 1;
-                const tgl = new Date(data.tanggal_tes).toLocaleDateString('id-ID');
-                const rawDataStr = encodeURIComponent(JSON.stringify(data));
-                tableBody.innerHTML += `
-                    <tr>
-                        <td><strong>${data.nama}</strong></td><td>${data.posisi}</td><td>${tgl}</td>
-                        <td><strong>${data.mbti}</strong></td>
-                        <td><button class="btn-small" onclick="cetakPDF('${rawDataStr}')">Cetak Detail PDF</button></td>
-                    </tr>
-                `;
-            });
+                if(issues.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Belum ada data masuk.</td></tr>`;
+                    if(roleAktif === "Owner") { document.getElementById('stat-total').innerText = "0"; document.getElementById('stat-mbti').innerText = "-"; }
+                    return;
+                }
 
-            if(roleAktif === "Owner") {
-                document.getElementById('stat-total').innerText = total + " Orang";
-                let maxStr = "-", max = 0;
-                for(let m in countMBTI) { if(countMBTI[m] > max) { max = countMBTI[m]; maxStr = m; } }
-                document.getElementById('stat-mbti').innerText = maxStr + " (" + max + " org)";
+                let total = 0; let countMBTI = {};
+                
+                issues.forEach(issue => {
+                    const data = JSON.parse(issue.body);
+                    dataPelamarGlobal.push(data);
+                    issueIdsTerkini.push(issue.number);
+                    total++; countMBTI[data.mbti] = (countMBTI[data.mbti] || 0) + 1;
+                    
+                    const tgl = new Date(data.tanggal_tes).toLocaleDateString('id-ID');
+                    const rawDataStr = encodeURIComponent(JSON.stringify(data));
+                    
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td><strong>${data.nama}</strong></td><td>${data.posisi}</td><td>${tgl}</td>
+                            <td><strong>${data.mbti}</strong></td>
+                            <td><button class="btn-small" onclick="cetakPDF('${rawDataStr}')">Cetak Detail PDF</button></td>
+                        </tr>
+                    `;
+                });
+
+                if(roleAktif === "Owner") {
+                    document.getElementById('stat-total').innerText = total + " Orang";
+                    let maxStr = "-", max = 0;
+                    for(let m in countMBTI) { if(countMBTI[m] > max) { max = countMBTI[m]; maxStr = m; } }
+                    document.getElementById('stat-mbti').innerText = maxStr + " (" + max + " org)";
+                }
+            } catch(e) {
+                tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:red;">Koneksi gagal. Cek Token GitHub Anda.</td></tr>`;
             }
         }
 
-        function hapusSemuaData() {
-            if(confirm("PERINGATAN: Apakah Anda yakin ingin MENGHAPUS SEMUA DATA PELAMAR secara permanen?")) {
-                localStorage.removeItem('db_mbti_pelamar'); fetchDataPelamar(); alert("Seluruh data berhasil dihapus.");
+        async function hapusSemuaData() {
+            if(!confirm("PERINGATAN: Menghapus semua data pelamar dari database server?")) return;
+            document.getElementById('tabel-body').innerHTML = `<tr><td colspan="5" style="text-align:center;">Menghapus data di server...</td></tr>`;
+            
+            for(let id of issueIdsTerkini) {
+                await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/issues/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ state: "closed" })
+                });
             }
+            alert("Data berhasil dibersihkan dari server.");
+            fetchDataPelamar();
         }
 
-        // FUNGSI PENDUKUNG ANALISIS
+        // FUNGSI PENDUKUNG ANALISIS & PDF
         function hitungUmur(tglLahir) {
             const dob = new Date(tglLahir);
             const diff_ms = Date.now() - dob.getTime();
@@ -442,17 +528,14 @@
 
         function kalkulasiRelevansi(mbti, posisiStr) {
             let p = posisiStr.toLowerCase();
-            let baseScore = 65 + Math.floor(Math.random() * 10); // Base 65-74%
-            
-            // Logika Sederhana Pemetaan Karakter ke Industri
+            let baseScore = 65 + Math.floor(Math.random() * 10); 
             if(mbti.includes("E") && (p.includes("market") || p.includes("sales") || p.includes("pr") || p.includes("humas") || p.includes("komunikasi"))) baseScore += 20;
             if(mbti.includes("I") && (p.includes("it") || p.includes("program") || p.includes("admin") || p.includes("data") || p.includes("analis"))) baseScore += 20;
             if(mbti.includes("J") && (p.includes("manajer") || p.includes("hr") || p.includes("uang") || p.includes("akun") || p.includes("operasi"))) baseScore += 15;
             if(mbti.includes("P") && (p.includes("desain") || p.includes("kreatif") || p.includes("seni") || p.includes("konten") || p.includes("tulis"))) baseScore += 15;
             if(mbti.includes("T") && (p.includes("teknisi") || p.includes("engineer") || p.includes("hukum") || p.includes("audit"))) baseScore += 15;
             if(mbti.includes("F") && (p.includes("guru") || p.includes("rawat") || p.includes("sosial") || p.includes("konselor") || p.includes("layanan"))) baseScore += 15;
-
-            return Math.min(baseScore, 98); // Maksimal 98%
+            return Math.min(baseScore, 98); 
         }
 
         function cetakPDF(rawDataStr) {
@@ -465,12 +548,10 @@
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
             let cursorY = 0;
 
-            // HEADER
             doc.setFillColor(26, 54, 93); doc.rect(0, 0, 210, 30, 'F');
             doc.setTextColor(255, 255, 255); doc.setFontSize(16); doc.setFont("helvetica", "bold");
             doc.text(`LAPORAN TES MBTI - REKRUTMEN`, 105, 18, null, null, "center");
 
-            // BAGIAN 1: INFO PELAMAR
             cursorY = 40;
             doc.setTextColor(0, 0, 0); doc.setFontSize(12); doc.text("1. DATA PROFIL PELAMAR", 15, cursorY);
             doc.setFont("helvetica", "normal"); doc.setFontSize(10);
@@ -478,7 +559,6 @@
             cursorY += 6; doc.text(`Umur / Tgl Lahir : ${umur} Tahun (${new Date(data.tgl_lahir).toLocaleDateString('id-ID')})`, 15, cursorY);
             cursorY += 6; doc.text(`Posisi Dilamar : ${data.posisi}`, 15, cursorY);
             
-            // KOTAK SKOR RELEVANSI
             doc.setFillColor(240, 248, 255); doc.rect(130, 35, 65, 25, 'F');
             doc.setTextColor(26, 54, 93); doc.setFontSize(10); doc.setFont("helvetica", "bold");
             doc.text("Kecocokan Karakter & Posisi:", 133, 42);
@@ -488,13 +568,11 @@
 
             doc.setDrawColor(200, 200, 200); cursorY += 10; doc.line(15, cursorY, 195, cursorY);
 
-            // BAGIAN 2: HASIL KEPRIBADIAN
             cursorY += 10;
             doc.setTextColor(0, 0, 0); doc.setFontSize(12); doc.setFont("helvetica", "bold"); doc.text("2. ANALISIS KEPRIBADIAN (MBTI)", 15, cursorY);
             cursorY += 8;
             doc.setFontSize(16); doc.setTextColor(49, 130, 206); doc.text(`TIPE: ${data.mbti} - ${detail.tipe}`, 15, cursorY);
             
-            // Helper function for text writing and wrapping
             function writeLongText(title, textContent, yPos) {
                 if(yPos > 270) { doc.addPage(); yPos = 20; }
                 doc.setTextColor(0, 0, 0); doc.setFontSize(10); doc.setFont("helvetica", "bold");
@@ -512,7 +590,6 @@
             
             doc.setDrawColor(200, 200, 200); cursorY += 2; doc.line(15, cursorY, 195, cursorY);
 
-            // BAGIAN 3: DINAMIKA TEMPAT KERJA
             cursorY += 10;
             doc.setTextColor(0, 0, 0); doc.setFontSize(12); doc.setFont("helvetica", "bold"); doc.text("3. DINAMIKA DI TEMPAT KERJA", 15, cursorY);
             cursorY += 8;
@@ -520,10 +597,8 @@
             cursorY = writeLongText("Interaksi Bersama Rekan Kerja:", detail.rekan, cursorY);
             cursorY = writeLongText("Rekomendasi Posisi/Karir Ideal:", detail.cocok, cursorY);
 
-            // Pindah halaman jika penuh
             if(cursorY > 230) { doc.addPage(); cursorY = 20; } else { cursorY += 5; doc.setDrawColor(200, 200, 200); doc.line(15, cursorY, 195, cursorY); cursorY += 10; }
 
-            // BAGIAN 4: PANDUAN INTERVIEW
             doc.setTextColor(0, 0, 0); doc.setFontSize(12); doc.setFont("helvetica", "bold"); doc.text("4. PANDUAN WAWANCARA (KHUSUS HRD)", 15, cursorY);
             cursorY += 8;
             doc.setFontSize(9); doc.setFont("helvetica", "italic"); doc.setTextColor(100, 100, 100);
@@ -540,7 +615,6 @@
                 });
             }
             
-            // Pertanyaan Dinamis Relevansi Posisi
             let dynamicQ = `Q3: Posisi ${data.posisi} membutuhkan adaptasi tinggi. Melihat Anda seorang ${data.mbti}, bagaimana cara Anda menyeimbangkan gaya alami Anda dengan tuntutan pekerjaan ini?`;
             let splitDyn = doc.splitTextToSize(dynamicQ, 180);
             doc.text(splitDyn, 15, cursorY);
@@ -548,7 +622,6 @@
             doc.save(`MBTI_Lengkap_${data.nama.replace(/\s+/g, '_')}.pdf`);
         }
 
-        // CSV (TETAP SAMA TAPI NAMBAH SKOR)
         function unduhDataCSV() {
             if(dataPelamarGlobal.length === 0) { alert("Tidak ada data."); return; }
             let csvContent = "data:text/csv;charset=utf-8,Nama Lengkap,Umur,Posisi Dilamar,Skor Relevansi,Hasil MBTI,Tipe,Tanggal Tes\n";
@@ -563,18 +636,39 @@
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
-        // EDIT SOAL
+        // EDIT SOAL (HANYA ADMIN)
         function renderFormEditSoal() {
             const container = document.getElementById('form-edit-soal-container'); container.innerHTML = "";
             soalMBTI.forEach((soal, i) => {
                 container.innerHTML += `<div class="edit-soal-box"><div style="font-weight:bold; margin-bottom:5px; color:var(--primary);">Soal ${i+1}</div><input type="text" id="edit-q${i}" value="${soal.q}" style="margin-bottom:8px;"><div style="display:flex; gap:10px; margin-bottom:8px;"><div style="flex:1;"><input type="text" id="edit-a${i}" value="${soal.a}"></div><div style="flex:1;"><input type="text" id="edit-b${i}" value="${soal.b}"></div></div><select id="edit-t${i}"><option value="EI" ${soal.type === 'EI' ? 'selected' : ''}>Faktor: E vs I (Sosial)</option><option value="SN" ${soal.type === 'SN' ? 'selected' : ''}>Faktor: S vs N (Informasi)</option><option value="TF" ${soal.type === 'TF' ? 'selected' : ''}>Faktor: T vs F (Keputusan)</option><option value="JP" ${soal.type === 'JP' ? 'selected' : ''}>Faktor: J vs P (Gaya Kerja)</option></select></div>`;
             });
         }
-        function simpanSoalBaru() {
-            if(!confirm("Anda yakin ingin menyimpan soal baru?")) return;
+        
+        async function simpanSoalBaru() {
+            if(!confirm("Anda yakin ingin menyimpan soal baru ke server?")) return;
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('loading-text').innerText = "Menyimpan Soal ke Server...";
+            
             let soalBaru = [];
             for(let i=0; i<20; i++) { soalBaru.push({ q: document.getElementById(`edit-q${i}`).value, a: document.getElementById(`edit-a${i}`).value, b: document.getElementById(`edit-b${i}`).value, type: document.getElementById(`edit-t${i}`).value }); }
-            localStorage.setItem('db_mbti_soal', JSON.stringify(soalBaru)); soalMBTI = soalBaru; renderSoalPelamar(); alert("Soal baru diterapkan!");
+            
+            try {
+                const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/issues`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        title: `Konfigurasi Soal MBTI (${new Date().toLocaleString('id-ID')})`, 
+                        labels: ["config-soal"], 
+                        body: JSON.stringify(soalBaru) 
+                    })
+                });
+                if(res.ok) {
+                    soalMBTI = soalBaru; renderSoalPelamar(); alert("Soal baru berhasil diterapkan untuk pelamar berikutnya!");
+                }
+            } catch(e) {
+                alert("Gagal menyimpan soal ke server GitHub.");
+            }
+            document.getElementById('loading').style.display = 'none';
         }
     </script>
 </body>
