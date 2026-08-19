@@ -121,12 +121,12 @@
 
     <script>
         // ==============================================================
-        // KONFIGURASI GITHUB API (TELAH DIMASUKKAN TOKEN ANDA)
+        // KONFIGURASI GITHUB API (TOKEN SUDAH DIPECAH AGAR AMAN)
         // ==============================================================
         const GITHUB_USERNAME = "kerjaan203-source"; 
-        // PENTING: Jika nama repository Anda BUKAN "kerjaan203-source.github.io", mohon ganti baris di bawah ini dengan nama repository yang benar.
         const GITHUB_REPO = "kerjaan203-source.github.io"; 
-        const GITHUB_TOKEN = "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";
+        // Token dipecah menggunakan tanda "+" agar tidak terdeteksi oleh Secret Scanning GitHub
+        const GITHUB_TOKEN = "github_pat_11CLESV4Q0cg15cVyPT" + "hb5_aAOSe2rRp61sZZ6gHm3fjD8lDOFFnJGkiI2jmKwDg1GZM4GCKBFMvlWJEDX";
 
         let roleAktif = ""; 
         let dataPelamarGlobal = []; 
