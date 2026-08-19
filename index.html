@@ -3,13 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Rekrutmen & Tes MBTI Profesional</title>
+    <title>Sistem Rekrutmen & Tes MBTI</title>
     <!-- Library Cetak PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
-    <!-- ========================================== -->
-    <!-- BAGIAN 1: CSS (TATA LETAK VISUAL)          -->
-    <!-- ========================================== -->
     <style>
         :root {
             --primary: #2b6cb0; --secondary: #3182ce; --dark: #1a365d;
@@ -20,7 +17,6 @@
         .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; border-top: 5px solid var(--primary); }
         h2, h3 { color: var(--dark); text-align: center; }
         
-        /* Elemen Form */
         .form-group { margin-bottom: 15px; }
         label { font-weight: bold; display: block; margin-bottom: 5px; color: #4a5568; font-size: 14px; }
         input[type="text"], input[type="date"], input[type="password"], textarea, select {
@@ -30,36 +26,29 @@
         .btn:hover { background-color: var(--dark); }
         .btn-green { background-color: #38a169; } .btn-green:hover { background-color: #2f855a; }
         
-        /* Tampilan Soal Pelamar */
         .question-box { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; }
         .option-label { display: block; padding: 12px; margin-bottom: 10px; background-color: #edf2f7; border-radius: 6px; cursor: pointer; }
         .option-label:hover { background-color: var(--border); }
         
-        /* Tampilan Navigasi Dasbor */
         .header-dash { background: var(--dark); color: white; padding: 15px 20px; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; }
         .tabs { display: flex; background: #fff; border-bottom: 2px solid var(--border); margin-bottom: 20px; border-radius: 0 0 8px 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .tab-btn { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: bold; color: #718096; border-bottom: 3px solid transparent; }
         .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
         
-        /* Tampilan Tabel Data */
         table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-top: 10px; font-size: 14px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
         th { background-color: #edf2f7; }
         .btn-small { background: #e53e3e; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
         
-        /* Layout Pengaturan Soal (Admin) */
         .edit-soal-box { background: #f8fafc; border: 1px dashed #cbd5e0; padding: 15px; margin-bottom: 15px; border-radius: 6px; }
         
-        /* Tampilan Analitik (Owner) */
         .analytics { display: flex; gap: 15px; margin-bottom: 20px; }
         .card-stat { background: white; padding: 15px; border-radius: 8px; flex: 1; border-left: 4px solid #d35400; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .card-stat h4 { margin: 0 0 5px 0; color: #7f8c8d; font-size: 12px; }
         .card-stat .value { font-size: 20px; font-weight: bold; color: var(--dark); }
 
-        /* Visibilitas Halaman */
         #view-tes, #view-terimakasih, #view-login, #view-dashboard, #stat-container, #tab-edit-soal { display: none; }
         
-        /* Loading Screen */
         #loading { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 1000; text-align: center; padding-top: 25vh; }
         .spinner { border: 6px solid #f3f3f3; border-top: 6px solid var(--primary); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -72,11 +61,7 @@
 
     <div class="container" id="main-app">
         
-        <!-- ========================================== -->
-        <!-- BAGIAN 2: HALAMAN PELAMAR                  -->
-        <!-- ========================================== -->
-        
-        <!-- A. Formulir Data Diri -->
+        <!-- HALAMAN PELAMAR -->
         <div id="view-datadiri" class="card">
             <h2>Formulir Rekrutmen</h2>
             <p style="text-align:center; color:#718096; font-size:14px;">Lengkapi data diri Anda sebelum memulai tes kepribadian.</p>
@@ -87,44 +72,36 @@
             <button class="btn" onclick="mulaiTes()">Lanjut ke Tes Kepribadian</button>
         </div>
 
-        <!-- B. Halaman Soal MBTI -->
         <div id="view-tes">
             <h2>Tes Kepribadian (20 Soal)</h2>
             <div id="questions-container-pelamar"></div>
             <button class="btn" onclick="hitungDanKirim()">Kirim Jawaban</button>
         </div>
 
-        <!-- C. Halaman Sukses -->
         <div id="view-terimakasih" class="card" style="text-align:center; padding: 50px 30px;">
             <h1 style="font-size: 50px; margin: 0;">🎉</h1>
             <h2>Terima Kasih!</h2>
-            <p>Data diri dan hasil tes Anda telah berhasil direkam oleh sistem.</p>
+            <p>Data diri dan hasil tes Anda telah direkam oleh sistem.</p>
         </div>
 
-        <!-- Tombol Portal Rahasia -->
         <div class="footer-link" id="footer-hrd">
-            <a href="#" onclick="showLogin()">Portal Akses HRD & Owner</a>
+            <a href="#" onclick="showLogin()">Portal Internal</a>
         </div>
         
-        <!-- ========================================== -->
-        <!-- BAGIAN 3: HALAMAN ADMIN & OWNER            -->
-        <!-- ========================================== -->
-        
-        <!-- Layar Login -->
+        <!-- HALAMAN ADMIN & OWNER -->
         <div id="view-login" class="card" style="max-width: 400px; margin: 50px auto;">
             <h2>Portal Internal</h2>
-            <p style="text-align:center; color:#718096; font-size:14px;">Masukkan PIN (Admin: 9999 | Owner: 1111)</p>
+            <p style="text-align:center; color:#718096; font-size:14px;">Masukkan PIN Keamanan</p>
             <input type="password" id="pin-input" placeholder="****" maxlength="4" style="text-align:center; font-size:24px; letter-spacing: 5px;">
-            <button class="btn" onclick="cekPIN()" style="margin-top:20px;">Masuk Dasbor</button>
-            <button class="btn" onclick="location.reload()" style="margin-top:10px; background:#e2e8f0; color:#333;">Kembali</button>
+            <button class="btn" onclick="cekPIN()" style="margin-top:20px;">Otorisasi Akses</button>
+            <button class="btn" onclick="location.reload()" style="margin-top:10px; background:#e2e8f0; color:#333;">Batal</button>
         </div>
 
-        <!-- Dasbor Utama -->
         <div id="view-dashboard">
             <div class="header-dash">
                 <h2 style="margin:0; font-size:18px;" id="dash-title">Dasbor Rekrutmen</h2>
                 <div>
-                    <button class="btn-small" onclick="fetchDataPelamar()" style="background:white; color:var(--dark);">Segarkan Data</button>
+                    <button class="btn-small" onclick="fetchDataPelamar()" style="background:white; color:var(--dark);">Segarkan</button>
                     <button class="btn-small" onclick="location.reload()" style="margin-left:5px;">Keluar</button>
                 </div>
             </div>
@@ -134,16 +111,15 @@
                 <div class="tab-btn" id="btn-tab-soal" onclick="gantiTab('soal')">Pengaturan Soal</div>
             </div>
 
-            <!-- Analitik (Khusus Owner) -->
             <div id="stat-container" class="analytics">
                 <div class="card-stat"><h4>Total Pelamar</h4><div class="value" id="stat-total">-</div></div>
                 <div class="card-stat"><h4>Kepribadian Terbanyak</h4><div class="value" id="stat-mbti">-</div></div>
             </div>
 
-            <!-- Tab 1: Data Pelamar -->
             <div id="tab-data-pelamar">
                 <div style="text-align: right; margin-bottom: 10px;">
-                    <button class="btn btn-green" style="width:auto; padding:8px 15px; font-size:14px;" onclick="unduhDataCSV()">📥 Unduh Semua (CSV)</button>
+                    <button class="btn btn-green" style="width:auto; padding:8px 15px; font-size:14px;" onclick="unduhDataCSV()">📥 Unduh Laporan Detail (Excel)</button>
+                    <button class="btn btn-small" style="padding:8px 15px; font-size:14px; margin-left:5px;" onclick="hapusSemuaData()">🗑️ Hapus Semua Data</button>
                 </div>
                 <table>
                     <thead><tr><th>Nama</th><th>Posisi</th><th>Tanggal</th><th>MBTI</th><th>Aksi</th></tr></thead>
@@ -151,10 +127,9 @@
                 </table>
             </div>
 
-            <!-- Tab 2: Pengaturan Edit Soal -->
             <div id="tab-edit-soal" class="card" style="margin-top:0; border-top:none;">
-                <h3 style="margin-top:0;">Edit 20 Pertanyaan MBTI</h3>
-                <p style="font-size:12px; color:#e53e3e;">*Pastikan komposisi Tipe Soal seimbang (5 soal EI, 5 soal SN, 5 soal TF, 5 soal JP) agar akurat.</p>
+                <h3 style="margin-top:0;">Edit Pertanyaan MBTI</h3>
+                <p style="font-size:12px; color:#e53e3e;">*Pastikan komposisi seimbang (5 soal EI, 5 soal SN, 5 soal TF, 5 soal JP).</p>
                 <div id="form-edit-soal-container"></div>
                 <button class="btn btn-green" onclick="simpanSoalBaru()">💾 Simpan & Terapkan Soal Baru</button>
             </div>
@@ -162,24 +137,31 @@
 
     </div>
 
-    <!-- ========================================== -->
-    <!-- BAGIAN 4: JAVASCRIPT (LOGIKA & API)        -->
-    <!-- ========================================== -->
+    <!-- JAVASCRIPT LOGIKA SISTEM -->
     <script>
-        // ---------------------------------------------------------
-        // A. KONFIGURASI GITHUB (UBAH BAGIAN INI SAJA!)
-        // ---------------------------------------------------------
-        const GITHUB_USERNAME = "USERNAME_GITHUB_ANDA"; 
-        const GITHUB_REPO = "NAMA_REPO_ANDA"; 
-        const GITHUB_TOKEN = "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-
-        // ---------------------------------------------------------
-        // B. VARIABEL GLOBAL & SOAL DEFAULT
-        // ---------------------------------------------------------
         let roleAktif = "";
-        let dataPelamarGlobal = []; // Untuk simpan data yang ditarik agar bisa di-download CSV
+        let dataPelamarGlobal = []; 
         
-        // Soal Bawaan (Default). Akan tertimpa jika ada konfigurasi khusus di GitHub.
+        // KAMUS MBTI (Dipindah ke atas agar bisa diakses oleh fungsi Excel dan PDF)
+        const kamusMBTI = {
+            "ESTJ": { tipe: "The Executive", kerja: "Sangat terorganisir, menghargai aturan, berorientasi target.", cocok: "Manajer operasional, supervisor.", cara: "Sistematis." },
+            "ENTJ": { tipe: "The Commander", kerja: "Pemimpin alami yang fokus pada visi jangka panjang.", cocok: "Eksekutif, direktur, analis.", cara: "Tegas, sangat logis." },
+            "ESFJ": { tipe: "The Consul", kerja: "Peduli pada keharmonisan tim dan kebutuhan rekan kerja.", cocok: "HRD, customer service.", cara: "Kolaboratif, terstruktur." },
+            "ENFJ": { tipe: "The Protagonist", kerja: "Inspirator yang luar biasa, memotivasi tim mencapai potensi.", cocok: "Trainer, public relations.", cara: "Karismatik." },
+            "ISTJ": { tipe: "The Logistician", kerja: "Pekerja keras, faktual, detail, dan patuh SOP.", cocok: "Akuntan, auditor, admin.", cara: "Metodis, hati-hati." },
+            "INTJ": { tipe: "The Architect", kerja: "Pemikir strategis yang mandiri, pemecah masalah kompleks.", cocok: "Programmer, arsitek sistem.", cara: "Fokus visi, perfeksionis." },
+            "ISFJ": { tipe: "The Defender", kerja: "Pekerja setia, hangat, teliti menjaga stabilitas.", cocok: "Perawat, staf pendukung.", cara: "Praktis, protektif." },
+            "INFJ": { tipe: "The Advocate", kerja: "Idealis berprinsip kuat, bekerja demi makna.", cocok: "Konselor, penulis.", cara: "Intuitif, terorganisir." },
+            "ESTP": { tipe: "The Entrepreneur", kerja: "Enerjik, menyukai aksi nyata di lapangan.", cocok: "Sales, marketing.", cara: "Spontan, pengambil risiko." },
+            "ENTP": { tipe: "The Debater", kerja: "Pemikir cepat yang suka mencari celah inovasi.", cocok: "Konsultan, pengusaha.", cara: "Dinamis." },
+            "ESFP": { tipe: "The Entertainer", kerja: "Membawa energi positif dan keceriaan.", cocok: "Entertainer, public speaker.", cara: "Sosial, praktis." },
+            "ENFP": { tipe: "The Campaigner", kerja: "Antusias, kreatif, penuh ide memajukan perusahaan.", cocok: "Marketing kreatif, desainer.", cara: "Multitasking, fleksibel." },
+            "ISTP": { tipe: "The Virtuoso", kerja: "Pemecah masalah praktis yang tangguh dengan data/alat.", cocok: "Teknisi, mekanik.", cara: "Mandiri, hands-on." },
+            "INTP": { tipe: "The Logician", kerja: "Penemu rasional, kuat menganalisis teori.", cocok: "Data scientist, peneliti.", cara: "Logis, fokus ide." },
+            "ISFP": { tipe: "The Adventurer", kerja: "Tenang, ramah, tidak suka tekanan tinggi.", cocok: "Seniman, desainer.", cara: "Fleksibel, adaptif." },
+            "INFP": { tipe: "The Mediator", kerja: "Peduli, setia pada nilai, melihat kebaikan orang.", cocok: "HRD, desainer.", cara: "Passion, hindari konflik." }
+        };
+
         let soalMBTI = [
             {q: "Di akhir pekan setelah bekerja, saya lebih suka...", a: "Berkumpul bersama teman", b: "Bersantai di rumah", type: "EI"},
             {q: "Saat bekerja dalam tim, saya biasanya...", a: "Aktif berbicara", b: "Suka bekerja mandiri", type: "EI"},
@@ -203,31 +185,13 @@
             {q: "Saya merasa nyaman bekerja jika...", a: "Semua sudah diputuskan pasti", b: "Dibiarkan terbuka untuk opsi lain", type: "JP"}
         ];
 
-        // ---------------------------------------------------------
-        // C. INISIALISASI (MENARIK SOAL CUSTOM JIKA ADA)
-        // ---------------------------------------------------------
-        async function initApp() {
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('loading-text').innerText = "Menyiapkan Kuesioner...";
-            
-            try {
-                // Cari Issue yang menyimpan konfigurasi soal
-                const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/issues?labels=config-soal&state=open`, {
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
-                });
-                const issues = await res.json();
-                
-                // Jika Admin pernah menyimpan soal custom, gunakan data paling baru [0]
-                if(issues.length > 0) {
-                    soalMBTI = JSON.parse(issues[0].body);
-                }
-            } catch(e) { console.warn("Pakai soal default."); }
-            
+        // INIT APLIKASI
+        function initApp() {
+            let savedSoal = localStorage.getItem('db_mbti_soal');
+            if(savedSoal) { soalMBTI = JSON.parse(savedSoal); }
             renderSoalPelamar();
-            document.getElementById('loading').style.display = 'none';
         }
         
-        // Render UI Soal untuk Pelamar
         function renderSoalPelamar() {
             const container = document.getElementById('questions-container-pelamar');
             container.innerHTML = "";
@@ -243,15 +207,12 @@
             });
         }
         
-        // Jalankan saat web dibuka
         window.onload = initApp;
 
-        // ---------------------------------------------------------
-        // D. LOGIKA PELAMAR (MENGISI & MENGIRIM TES)
-        // ---------------------------------------------------------
+        // LOGIKA PELAMAR
         function mulaiTes() {
             if(!document.getElementById('nama').value || !document.getElementById('posisi').value) {
-                alert("Harap lengkapi semua form data diri!"); return;
+                alert("Harap lengkapi form data diri!"); return;
             }
             document.getElementById('view-datadiri').style.display = 'none';
             document.getElementById('footer-hrd').style.display = 'none';
@@ -259,13 +220,13 @@
             window.scrollTo(0, 0);
         }
 
-        async function hitungDanKirim() {
+        function hitungDanKirim() {
             for(let i = 1; i <= 20; i++) {
                 if(!document.querySelector(`input[name="q${i}"]:checked`)) { alert("Mohon jawab seluruh 20 pertanyaan."); return; }
             }
 
             document.getElementById('loading').style.display = 'block';
-            document.getElementById('loading-text').innerText = "Menganalisis Kepribadian...";
+            document.getElementById('loading-text').innerText = "Menyimpan Data...";
             
             let scores = { E:0, I:0, S:0, N:0, T:0, F:0, J:0, P:0 };
             for(let i = 1; i <= 20; i++) {
@@ -285,24 +246,19 @@
                 mbti: mbti, tanggal_tes: new Date().toISOString()
             };
 
-            try {
-                const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/issues`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title: `Pelamar: ${dataPelamar.nama}`, labels: ["data-pelamar"], body: JSON.stringify(dataPelamar) })
-                });
-                if(res.ok) {
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('view-tes').style.display = 'none';
-                    document.getElementById('view-terimakasih').style.display = 'block';
-                    window.scrollTo(0, 0);
-                } else { throw new Error("Gagal API"); }
-            } catch (e) { document.getElementById('loading').style.display = 'none'; alert("Gagal mengirim data. Cek Token GitHub."); }
+            setTimeout(() => {
+                let db = JSON.parse(localStorage.getItem('db_mbti_pelamar')) || [];
+                db.push(dataPelamar);
+                localStorage.setItem('db_mbti_pelamar', JSON.stringify(db));
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('view-tes').style.display = 'none';
+                document.getElementById('view-terimakasih').style.display = 'block';
+                window.scrollTo(0, 0);
+            }, 800); 
         }
 
-        // ---------------------------------------------------------
-        // E. LOGIKA ADMIN/OWNER (LOGIN & TABS)
-        // ---------------------------------------------------------
+        // LOGIKA LOGIN
         function showLogin() {
             document.getElementById('view-datadiri').style.display = 'none';
             document.getElementById('footer-hrd').style.display = 'none';
@@ -312,8 +268,8 @@
         function cekPIN() {
             const pin = document.getElementById('pin-input').value;
             if(pin === "9999") { roleAktif = "Admin"; masukDasbor("Dasbor Admin HRD", false); } 
-            else if(pin === "1111") { roleAktif = "Owner"; masukDasbor("Executive Dashboard (Owner)", true); } 
-            else { alert("PIN Salah!"); document.getElementById('pin-input').value = ""; }
+            else if(pin === "1111") { roleAktif = "Owner"; masukDasbor("Executive Dashboard", true); } 
+            else { alert("Akses Ditolak: PIN Tidak Valid."); document.getElementById('pin-input').value = ""; }
         }
 
         function masukDasbor(title, showStats) {
@@ -322,7 +278,7 @@
             document.getElementById('view-dashboard').style.display = "block";
             if(showStats) document.getElementById('stat-container').style.display = "flex";
             fetchDataPelamar();
-            renderFormEditSoal(); // Siapkan form edit soal di belakang layar
+            renderFormEditSoal(); 
         }
 
         function gantiTab(tabName) {
@@ -340,98 +296,79 @@
             }
         }
 
-        // ---------------------------------------------------------
-        // F. LOGIKA DASBOR (TARIK DATA & EXPORT EXCEL/PDF)
-        // ---------------------------------------------------------
-        async function fetchDataPelamar() {
+        function fetchDataPelamar() {
             const tableBody = document.getElementById('tabel-body');
-            tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Mengambil data...</td></tr>`;
-            dataPelamarGlobal = []; // Kosongkan data lama
-
-            try {
-                const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/issues?labels=data-pelamar&state=open`, {
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
-                });
-                const issues = await res.json();
-                tableBody.innerHTML = "";
-
-                if(issues.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Belum ada pelamar.</td></tr>`;
-                    if(roleAktif === "Owner") { document.getElementById('stat-total').innerText = "0"; document.getElementById('stat-mbti').innerText = "-"; }
-                    return;
-                }
-
-                let total = 0; let countMBTI = {};
-                issues.forEach(issue => {
-                    const data = JSON.parse(issue.body);
-                    dataPelamarGlobal.push(data); // Simpan ke global array untuk CSV
-                    total++; countMBTI[data.mbti] = (countMBTI[data.mbti] || 0) + 1;
-                    
-                    const tgl = new Date(data.tanggal_tes).toLocaleDateString('id-ID');
-                    const rawDataStr = encodeURIComponent(JSON.stringify(data));
-
-                    tableBody.innerHTML += `
-                        <tr>
-                            <td><strong>${data.nama}</strong></td><td>${data.posisi}</td><td>${tgl}</td>
-                            <td><strong>${data.mbti}</strong></td>
-                            <td><button class="btn-small" onclick="cetakPDF('${rawDataStr}')">PDF</button></td>
-                        </tr>
-                    `;
-                });
-
-                if(roleAktif === "Owner") {
-                    document.getElementById('stat-total').innerText = total + " Orang";
-                    let maxStr = "-", max = 0;
-                    for(let m in countMBTI) { if(countMBTI[m] > max) { max = countMBTI[m]; maxStr = m; } }
-                    document.getElementById('stat-mbti').innerText = maxStr + " (" + max + " org)";
-                }
-            } catch (e) { tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:red;">Gagal mengambil data.</td></tr>`; }
-        }
-
-        // FUNGSI BARU: UNDUH CSV (EXCEL)
-        function unduhDataCSV() {
-            if(dataPelamarGlobal.length === 0) { alert("Tidak ada data untuk diunduh."); return; }
+            dataPelamarGlobal = JSON.parse(localStorage.getItem('db_mbti_pelamar')) || [];
             
-            let csvContent = "data:text/csv;charset=utf-8,";
-            // Header Excel
-            csvContent += "Nama Lengkap,Tanggal Lahir,Posisi Dilamar,Alamat,Hasil MBTI,Tanggal Tes\n";
+            tableBody.innerHTML = "";
+
+            if(dataPelamarGlobal.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Belum ada data masuk.</td></tr>`;
+                if(roleAktif === "Owner") { document.getElementById('stat-total').innerText = "0"; document.getElementById('stat-mbti').innerText = "-"; }
+                return;
+            }
+
+            let total = 0; let countMBTI = {};
             
-            // Isi Data
-            dataPelamarGlobal.forEach(d => {
-                let row = `"${d.nama}","${d.tgl_lahir}","${d.posisi}","${d.alamat.replace(/(\r\n|\n|\r)/gm, " ")}","${d.mbti}","${new Date(d.tanggal_tes).toLocaleString('id-ID')}"`;
-                csvContent += row + "\n";
+            [...dataPelamarGlobal].reverse().forEach(data => {
+                total++; countMBTI[data.mbti] = (countMBTI[data.mbti] || 0) + 1;
+                const tgl = new Date(data.tanggal_tes).toLocaleDateString('id-ID');
+                const rawDataStr = encodeURIComponent(JSON.stringify(data));
+
+                tableBody.innerHTML += `
+                    <tr>
+                        <td><strong>${data.nama}</strong></td><td>${data.posisi}</td><td>${tgl}</td>
+                        <td><strong>${data.mbti}</strong></td>
+                        <td><button class="btn-small" onclick="cetakPDF('${rawDataStr}')">PDF</button></td>
+                    </tr>
+                `;
             });
 
-            // Eksekusi Download
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "Data_Pelamar_MBTI.csv");
-            document.body.appendChild(link); 
-            link.click();
-            document.body.removeChild(link);
+            if(roleAktif === "Owner") {
+                document.getElementById('stat-total').innerText = total + " Orang";
+                let maxStr = "-", max = 0;
+                for(let m in countMBTI) { if(countMBTI[m] > max) { max = countMBTI[m]; maxStr = m; } }
+                document.getElementById('stat-mbti').innerText = maxStr + " (" + max + " org)";
+            }
         }
 
-        // FUNGSI CETAK PDF 
-        const kamusMBTI = {
-            "ESTJ": { tipe: "The Executive", kerja: "Sangat terorganisir, menghargai aturan, dan berorientasi target.", cocok: "Manajer operasional, supervisor.", cara: "Sistematis." },
-            "ENTJ": { tipe: "The Commander", kerja: "Pemimpin alami yang fokus pada visi jangka panjang.", cocok: "Eksekutif, direktur, analis.", cara: "Tegas, sangat logis." },
-            "ESFJ": { tipe: "The Consul", kerja: "Peduli pada keharmonisan tim dan kebutuhan rekan kerja.", cocok: "HRD, customer service.", cara: "Kolaboratif, terstruktur." },
-            "ENFJ": { tipe: "The Protagonist", kerja: "Inspirator yang luar biasa, memotivasi tim mencapai potensi.", cocok: "Trainer, public relations.", cara: "Karismatik." },
-            "ISTJ": { tipe: "The Logistician", kerja: "Pekerja keras, faktual, detail, dan patuh SOP.", cocok: "Akuntan, auditor, admin.", cara: "Metodis, hati-hati." },
-            "INTJ": { tipe: "The Architect", kerja: "Pemikir strategis yang mandiri, pemecah masalah kompleks.", cocok: "Programmer, arsitek sistem.", cara: "Fokus visi, perfeksionis." },
-            "ISFJ": { tipe: "The Defender", kerja: "Pekerja setia, hangat, dan teliti menjaga stabilitas.", cocok: "Perawat, staf pendukung.", cara: "Praktis, protektif." },
-            "INFJ": { tipe: "The Advocate", kerja: "Idealis berprinsip kuat, bekerja demi makna.", cocok: "Konselor, penulis.", cara: "Intuitif, terorganisir." },
-            "ESTP": { tipe: "The Entrepreneur", kerja: "Enerjik, menyukai aksi nyata di lapangan.", cocok: "Sales, marketing lapangan.", cara: "Spontan, pengambil risiko." },
-            "ENTP": { tipe: "The Debater", kerja: "Pemikir cepat yang suka mencari celah inovasi.", cocok: "Konsultan, pengusaha.", cara: "Dinamis." },
-            "ESFP": { tipe: "The Entertainer", kerja: "Membawa energi positif dan keceriaan.", cocok: "Entertainer, public speaker.", cara: "Sosial, praktis." },
-            "ENFP": { tipe: "The Campaigner", kerja: "Antusias, kreatif, penuh ide memajukan perusahaan.", cocok: "Marketing kreatif, content creator.", cara: "Multitasking, fleksibel." },
-            "ISTP": { tipe: "The Virtuoso", kerja: "Pemecah masalah praktis yang tangguh dengan data/alat.", cocok: "Teknisi, mekanik.", cara: "Mandiri, hands-on." },
-            "INTP": { tipe: "The Logician", kerja: "Penemu rasional, kuat menganalisis teori.", cocok: "Data scientist, peneliti.", cara: "Logis, fokus ide." },
-            "ISFP": { tipe: "The Adventurer", kerja: "Tenang, ramah, tidak suka tekanan tinggi.", cocok: "Seniman, desainer.", cara: "Fleksibel, adaptif." },
-            "INFP": { tipe: "The Mediator", kerja: "Peduli, setia pada nilai, melihat kebaikan orang.", cocok: "HRD, desainer.", cara: "Passion, hindari konflik." }
-        };
+        function hapusSemuaData() {
+            if(confirm("PERINGATAN: Apakah Anda yakin ingin MENGHAPUS SEMUA DATA PELAMAR secara permanen?")) {
+                localStorage.removeItem('db_mbti_pelamar');
+                fetchDataPelamar();
+                alert("Seluruh data berhasil dihapus.");
+            }
+        }
 
+        // UNDUH EXCEL DENGAN DETAIL KEPRIBADIAN (DIPERBARUI)
+        function unduhDataCSV() {
+            if(dataPelamarGlobal.length === 0) { alert("Tidak ada data."); return; }
+            
+            let csvContent = "data:text/csv;charset=utf-8,";
+            // Header Kolom Baru yang Lengkap
+            csvContent += "Nama Lengkap,Tanggal Lahir,Posisi Dilamar,Alamat,Hasil MBTI,Tipe Kepribadian,Di Tempat Kerja,Posisi Cocok,Cara Kerja,Waktu Tes\n";
+            
+            dataPelamarGlobal.forEach(d => {
+                // Ambil data detail dari kamus berdasarkan hasil 4 huruf
+                let detail = kamusMBTI[d.mbti] || { tipe: "-", kerja: "-", cocok: "-", cara: "-" };
+                
+                // Membersihkan koma dan garis baru agar tidak merusak format Excel
+                let bersihAlamat = d.alamat ? d.alamat.replace(/(\r\n|\n|\r)/gm, " ").replace(/"/g, '""') : "";
+                let bersihKerja = detail.kerja.replace(/"/g, '""');
+                let bersihCocok = detail.cocok.replace(/"/g, '""');
+                let bersihCara = detail.cara.replace(/"/g, '""');
+
+                let row = `"${d.nama}","${d.tgl_lahir}","${d.posisi}","${bersihAlamat}","${d.mbti}","${detail.tipe}","${bersihKerja}","${bersihCocok}","${bersihCara}","${new Date(d.tanggal_tes).toLocaleString('id-ID')}"`;
+                csvContent += row + "\n";
+            });
+            
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", "Laporan_Lengkap_Pelamar_MBTI.csv");
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+        // CETAK PDF (OTOMATIS DETAIL)
         function cetakPDF(rawDataStr) {
             const data = JSON.parse(decodeURIComponent(rawDataStr));
             const detail = kamusMBTI[data.mbti] || { tipe: "-", kerja: "-", cocok: "-", cara: "-" };
@@ -460,47 +397,32 @@
             doc.save(`MBTI_${data.nama}.pdf`);
         }
 
-        // ---------------------------------------------------------
-        // G. FUNGSI BARU: PENGATURAN SOAL (EDIT & SIMPAN)
-        // ---------------------------------------------------------
+        // PENGATURAN SOAL
         function renderFormEditSoal() {
             const container = document.getElementById('form-edit-soal-container');
             container.innerHTML = "";
-            
             soalMBTI.forEach((soal, i) => {
-                // Auto-select dropdown Tipe
-                let selEI = soal.type === 'EI' ? 'selected' : '';
-                let selSN = soal.type === 'SN' ? 'selected' : '';
-                let selTF = soal.type === 'TF' ? 'selected' : '';
-                let selJP = soal.type === 'JP' ? 'selected' : '';
-
                 container.innerHTML += `
                     <div class="edit-soal-box">
                         <div style="font-weight:bold; margin-bottom:5px; color:var(--primary);">Soal ${i+1}</div>
-                        <input type="text" id="edit-q${i}" value="${soal.q}" placeholder="Pertanyaan Utama" style="margin-bottom:8px;">
-                        
+                        <input type="text" id="edit-q${i}" value="${soal.q}" style="margin-bottom:8px;">
                         <div style="display:flex; gap:10px; margin-bottom:8px;">
-                            <div style="flex:1;"><input type="text" id="edit-a${i}" value="${soal.a}" placeholder="Opsi A"></div>
-                            <div style="flex:1;"><input type="text" id="edit-b${i}" value="${soal.b}" placeholder="Opsi B"></div>
+                            <div style="flex:1;"><input type="text" id="edit-a${i}" value="${soal.a}"></div>
+                            <div style="flex:1;"><input type="text" id="edit-b${i}" value="${soal.b}"></div>
                         </div>
-                        
                         <select id="edit-t${i}">
-                            <option value="EI" ${selEI}>Faktor: E vs I (Sosial)</option>
-                            <option value="SN" ${selSN}>Faktor: S vs N (Informasi)</option>
-                            <option value="TF" ${selTF}>Faktor: T vs F (Keputusan)</option>
-                            <option value="JP" ${selJP}>Faktor: J vs P (Gaya Kerja)</option>
+                            <option value="EI" ${soal.type === 'EI' ? 'selected' : ''}>Faktor: E vs I (Sosial)</option>
+                            <option value="SN" ${soal.type === 'SN' ? 'selected' : ''}>Faktor: S vs N (Informasi)</option>
+                            <option value="TF" ${soal.type === 'TF' ? 'selected' : ''}>Faktor: T vs F (Keputusan)</option>
+                            <option value="JP" ${soal.type === 'JP' ? 'selected' : ''}>Faktor: J vs P (Gaya Kerja)</option>
                         </select>
                     </div>
                 `;
             });
         }
 
-        async function simpanSoalBaru() {
-            if(!confirm("Anda yakin ingin mengganti soal? Pelamar berikutnya akan melihat soal baru ini.")) return;
-            
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('loading-text').innerText = "Menyimpan Konfigurasi...";
-
+        function simpanSoalBaru() {
+            if(!confirm("Anda yakin ingin menyimpan soal baru?")) return;
             let soalBaru = [];
             for(let i=0; i<20; i++) {
                 soalBaru.push({
@@ -510,28 +432,10 @@
                     type: document.getElementById(`edit-t${i}`).value
                 });
             }
-
-            try {
-                // Simpan ke GitHub sebagai Issue khusus dengan label 'config-soal'
-                const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/issues`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        title: `Konfigurasi Soal MBTI Terbaru (${new Date().toLocaleString('id-ID')})`, 
-                        labels: ["config-soal"], 
-                        body: JSON.stringify(soalBaru) 
-                    })
-                });
-
-                if(res.ok) {
-                    soalMBTI = soalBaru; // Update variabel lokal juga
-                    renderSoalPelamar(); // Render ulang tampilan soal di halaman depan
-                    alert("Soal baru berhasil disimpan dan diterapkan!");
-                } else { throw new Error("Gagal menyimpan"); }
-            } catch(e) {
-                alert("Gagal menyimpan soal. Pastikan pengaturan Token GitHub benar.");
-            }
-            document.getElementById('loading').style.display = 'none';
+            localStorage.setItem('db_mbti_soal', JSON.stringify(soalBaru));
+            soalMBTI = soalBaru;
+            renderSoalPelamar();
+            alert("Soal baru berhasil diterapkan!");
         }
     </script>
 </body>
